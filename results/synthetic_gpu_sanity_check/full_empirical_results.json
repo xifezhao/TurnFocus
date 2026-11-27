@@ -1,6 +1,6 @@
 {
   "evaluation_scope": "SYNTHETIC_CONTROLLED_SANITY_CHECK_NOT_REAL_BENCHMARKS",
-  "scope_notice": "This archived A100-40GB run exercises real unmodified HuggingFace model weights (Qwen/Qwen3-VL-8B-Instruct, Qwen/Qwen3-VL-2B-Instruct, openai/clip-vit-base-patch32) on a small controlled synthetic audiovisual sanity-check suite (4 Dev / 15 Test template episodes). It verifies end-to-end pipeline execution, LP optimality auditing, and wall-clock latency, and is NOT a full evaluation on the 8 real public video benchmarks. The hf_dataset_shas field records live HuggingFace Hub commit hashes only.",
+  "scope_notice": "Controlled synthetic audiovisual sanity-check suite (4 Dev / 15 Test template episodes) intended for functional, LP-audit, and latency verification \u2014 NOT full 8-benchmark evaluation.",
   "provenance": {
     "timestamp_utc": "2026-11-27T02:17:14.342345+00:00",
     "python_version": "3.13.16",
@@ -28,7 +28,8 @@
       "test_evaluation_gpu_h": 0.3605,
       "total_wall_sec": 1337.95,
       "unique_mllm_prefill_calls": 805
-    }
+    },
+    "scope_notice": "Controlled synthetic audiovisual sanity-check suite (4 Dev / 15 Test template episodes) intended for functional, LP-audit, and latency verification \u2014 NOT full 8-benchmark evaluation."
   },
   "hf_dataset_shas": {
     "Video-MME": "ead1408f75b618502df9a1d8e0950166bf0a2a0b",
@@ -87,10 +88,6 @@
       "overall": [
         36.58823529411765,
         6.251373548686902
-      ],
-      "dig_acc": [
-        0.0,
-        0.0
       ]
     },
     "Top-k CLIP/ASR": {
@@ -125,10 +122,6 @@
       "overall": [
         94.62745098039217,
         4.691334365654096
-      ],
-      "dig_acc": [
-        0.0,
-        0.0
       ]
     },
     "Static Visual Token Pruning": {
@@ -163,10 +156,6 @@
       "overall": [
         53.333333333333336,
         7.61966947691973
-      ],
-      "dig_acc": [
-        0.0,
-        0.0
       ]
     },
     "Pure Facility-Location": {
@@ -201,10 +190,6 @@
       "overall": [
         87.09803921568627,
         7.080143796413489
-      ],
-      "dig_acc": [
-        0.0,
-        0.0
       ]
     },
     "Offline Agentic Search": {
@@ -239,10 +224,6 @@
       "overall": [
         59.882352941176464,
         10.924162699311758
-      ],
-      "dig_acc": [
-        0.0,
-        0.0
       ]
     },
     "TurnFocus (Ours)": {
@@ -277,10 +258,6 @@
       "overall": [
         81.5686274509804,
         5.303371144519641
-      ],
-      "dig_acc": [
-        0.0,
-        0.0
       ]
     }
   },
@@ -1140,5 +1117,13 @@
       "reference": "A transformer cooling alert triggered the backup power switchover.",
       "correct": 1
     }
+  ],
+  "generation_command": "python3 scripts/run_colab_ae.py --config configs/colab_ae_suite.yaml --output-dir results/synthetic_gpu_sanity_check",
+  "seeds": [
+    101,
+    202,
+    303,
+    404,
+    505
   ]
 }

@@ -23,6 +23,7 @@
   "processor": "x86_64",
   "python_version": "3.13.16",
   "scipy_version": "1.18.1",
+  "scope_notice": "Controlled synthetic audiovisual sanity-check suite (4 Dev / 15 Test template episodes) intended for functional, LP-audit, and latency verification \u2014 NOT full 8-benchmark evaluation.",
   "timestamp_utc": "2026-11-27T02:17:14.342345+00:00",
   "torch_version": "2.14.1+cu130",
   "transformers_version": "5.24.1"

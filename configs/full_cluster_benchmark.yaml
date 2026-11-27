@@ -1,4 +1,7 @@
-# Full Multi-Node / Sharded 8-Benchmark Cluster Configuration
+# Full Multi-Node / Sharded 8-Benchmark Cluster Specification Template (Reference Only)
+# Note: Multi-node sharding orchestration (num_shards: 16) is a cluster-job template for external
+# Slurm/Ray launchers over locally downloaded official benchmark video corpora; it is not executed
+# by the single-GPU scripts/run_colab_ae.py sanity-check runner.
 experiment_name: "turnfocus_full_8benchmark"
 seeds: [101, 202, 303, 404, 505]
 sharding:

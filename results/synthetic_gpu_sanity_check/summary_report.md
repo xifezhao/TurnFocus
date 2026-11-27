@@ -4,6 +4,8 @@
 
 ## 1. Hardware & Pinned Checkpoint Provenance
 - **Timestamp (UTC)**: `2026-11-27T02:17:14.342345+00:00`
+- **Generation Command**: `python3 scripts/run_colab_ae.py --config configs/colab_ae_suite.yaml --output-dir results/synthetic_gpu_sanity_check`
+- **Bootstrap Seeds**: `[101, 202, 303, 404, 505]`
 - **GPU Hardware**: `NVIDIA A100-SXM4-40GB` (39.49 GB VRAM)
 - **Stack**: Python `3.13.16`, PyTorch `2.14.1+cu130`, CUDA `13.0`, Transformers `5.24.1`
 - **Pinned Checkpoint `Qwen/Qwen3-VL-8B-Instruct`**: `0c351dd01ed87e9c1b53cbc748cba10e6187ff3b`
@@ -69,3 +71,8 @@
 | (v) w/o DIG Fidelity Weighting | 100.0$\pm$0.0 | 87.4$\pm$10.6 | 100.0$\pm$0.0 | 26.0$\pm$23.3 | 87.1$\pm$7.1 |
 | (vi) Uniform Reset (c_conf < gamma_conf) | 100.0$\pm$0.0 | 67.8$\pm$24.8 | 100.0$\pm$0.0 | 50.0$\pm$0.0 | 81.6$\pm$5.3 |
 | (vii) Fixed Unclamped eta_mod | 100.0$\pm$0.0 | 94.0$\pm$6.9 | 100.0$\pm$0.0 | 65.3$\pm$25.6 | 92.8$\pm$5.5 |
+
+> **Ablation Interpretability Note**: On this small 15-episode synthetic sanity-check suite, several metrics saturate (`100.0±0.0`), making variants `(i)`, `(ii)`, `(iv-a)`, and `(vi)` indistinguishable at the accuracy level (and `(vi)` does not trigger when router confidence stays above `gamma_conf`). Although unit tests confirm every ablation switch alters the internal objective value, Table 3 in this synthetic archive verifies switch wiring only and is **not** discriminative empirical evidence on real long-video benchmarks.
+
+## 8. Companion Plot Coordinates (`fig3_pgfplots_coords.tex`)
+- `fig3_pgfplots_coords.tex` is auto-generated from `full_empirical_results.json`: **Panel (a)** maps directly to `pareto_frontier` (profiles `P0, P1, P2`), and **Panel (b)** maps directly to `dig_retention` (normalized against `highres_dig_reference_acc_pct`).

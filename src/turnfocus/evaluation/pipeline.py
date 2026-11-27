@@ -4,8 +4,10 @@ from __future__ import annotations
 
 import time
 from dataclasses import dataclass, field
-from typing import Dict, Optional
+from pathlib import Path
+from typing import Any, Dict, Optional
 import numpy as np
+import yaml
 
 from turnfocus.allocation.lazy_greedy import lazy_greedy_allocate
 from turnfocus.allocation.lp_audit import LPAuditResult, solve_lp_upper_bound
@@ -50,6 +52,51 @@ class TurnFocusHyperparams:
     uniform_reset_ablation: bool = False  # (vi)
     fixed_unclamped_eta: bool = False  # (vii)
     force_visual_only_eta: bool = False  # Table 11 visual-only comparator
+
+    @classmethod
+    def from_yaml(cls, path: Path | str) -> "TurnFocusHyperparams":
+        """Load hyperparameter defaults from a structured YAML config (e.g., configs/default_hyperparams.yaml)."""
+        raw: Dict[str, Any] = yaml.safe_load(Path(path).read_text(encoding="utf-8")) or {}
+        bp = raw.get("belief_and_probe", {})
+        cp = raw.get("candidate_pool", {})
+        sa = raw.get("submodular_allocation", {})
+        return cls(
+            w_b=int(bp.get("w_b", cls.w_b)),
+            d_shift=int(bp.get("d_shift", cls.d_shift)),
+            eps_0=float(bp.get("eps_0", cls.eps_0)),
+            rho_shrink=float(bp.get("rho_shrink", cls.rho_shrink)),
+            gamma_conf=float(bp.get("gamma_conf", cls.gamma_conf)),
+            t_soft=float(bp.get("t_soft", cls.t_soft)),
+            eta_0=float(bp.get("eta_0", cls.eta_0)),
+            m_cand=int(cp.get("m_cand", cls.m_cand)),
+            theta_nms=float(cp.get("theta_nms", cls.theta_nms)),
+            gamma_red=float(sa.get("gamma_red", cls.gamma_red)),
+            beta_ent=float(sa.get("beta_ent", cls.beta_ent)),
+            k_a=float(sa.get("k_a", cls.k_a)),
+            mu_b=float(sa.get("mu_b", cls.mu_b)),
+        )
+
+
+def load_operating_profiles_from_yaml(path: Path | str) -> Dict[str, OperatingProfile]:
+    """Load Operating Profiles (P0, P1, P2) from configs/default_hyperparams.yaml."""
+    from turnfocus.types import ResolutionTier
+
+    raw: Dict[str, Any] = yaml.safe_load(Path(path).read_text(encoding="utf-8")) or {}
+    profs_raw = raw.get("operating_profiles", {})
+    tier_map = {"R_L1": ResolutionTier.R_L1, "R_L2": ResolutionTier.R_L2}
+    out: Dict[str, OperatingProfile] = {}
+    for p_name, cfg in profs_raw.items():
+        tiers = tuple(tier_map[t] for t in cfg.get("allowed_tiers", ["R_L1"]))
+        out[p_name] = OperatingProfile(
+            name=p_name,
+            visual_token_budget=int(cfg["visual_token_budget"]),
+            decode_compute_budget=float(cfg["decode_compute_budget"]),
+            allowed_tiers=tiers,
+            tokens_per_clip_l1=int(cfg.get("tokens_per_clip_l1", 64)),
+            tokens_per_clip_l2=int(cfg.get("tokens_per_clip_l2", 160)),
+            max_l2_token_frac=float(cfg.get("max_l2_token_frac", 0.50)),
+        )
+    return out
 
 
 @dataclass

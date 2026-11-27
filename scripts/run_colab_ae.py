@@ -69,7 +69,7 @@ from turnfocus.evaluation.metrics import (
     summarize_latency_percentiles,
     summarize_lp_optimality_distribution,
 )
-from turnfocus.evaluation.pipeline import TurnFocusEngine, TurnFocusHyperparams
+from turnfocus.evaluation.pipeline import TurnFocusEngine, TurnFocusHyperparams, load_operating_profiles_from_yaml
 from turnfocus.indexing.dig import DIGCalibrator, compute_frame_edge_and_text_stats
 from turnfocus.indexing.offline_index import build_offline_video_index
 from turnfocus.models.mllm_runner import Decoupled2BReranker, MLLMBackboneRunner, SpatialTierSpecs
@@ -783,12 +783,112 @@ def deterministic_reference_rubric(reference: str, candidate: str) -> int:
     return 1 if hits >= max(1, len(ref_tokens) // 2) else 0
 
 
+class LocalDryRunEncoder:
+    """Deterministic zero-download feature encoder for `--dry-run` CPU/CI verification."""
+
+    def __init__(self) -> None:
+        self.model_id = "dry-run-deterministic-encoder"
+        self.device = "cpu"
+        self.commit_sha = "dry_run_local_cpu"
+
+    def encode_images(self, images: Sequence[Any], batch_size: int = 32) -> np.ndarray:
+        feats = []
+        for img in images:
+            pil_img = img if isinstance(img, Image.Image) else Image.fromarray(np.asarray(img, dtype=np.uint8))
+            arr = np.asarray(pil_img.resize((16, 16)), dtype=np.float32).reshape(-1)
+            vec = np.zeros(64, dtype=np.float32)
+            for i in range(64):
+                vec[i] = float(np.mean(arr[i::64]))
+            nrm = float(np.linalg.norm(vec)) + 1e-8
+            feats.append(vec / nrm)
+        return np.stack(feats, axis=0)
+
+    def encode_texts(self, texts: Sequence[str]) -> np.ndarray:
+        feats = []
+        for txt in texts:
+            vec = np.zeros(64, dtype=np.float32)
+            for tok in re.findall(r"[a-z0-9_]+", txt.lower()):
+                vec[hash(tok) % 64] += 1.0
+            nrm = float(np.linalg.norm(vec)) + 1e-8
+            feats.append(vec / nrm)
+        return np.stack(feats, axis=0)
+
+
+class LocalDryRunReranker:
+    """Deterministic zero-download 2B reranker stub for `--dry-run` verification."""
+
+    def __init__(self) -> None:
+        self.commit_sha = "dry_run_local_cpu"
+
+    def load(self) -> None:
+        return None
+
+    def score_clips(
+        self,
+        query: str,
+        clip_indices: np.ndarray,
+        v_idx: VideoIndex,
+        frame_fetcher: Callable[[int, Tuple[int, int]], Image.Image],
+    ) -> np.ndarray:
+        q_toks = set(re.findall(r"[a-z0-9_]+", query.lower()))
+        scores = []
+        for c_id in clip_indices:
+            c = v_idx.clips[int(c_id)]
+            c_toks = set(re.findall(r"[a-z0-9_]+", c.asr_text.lower()))
+            overlap = len(q_toks & c_toks) / max(len(q_toks), 1)
+            scores.append(float(overlap + 0.1 * getattr(c, "dig_score", 0.5)))
+        return np.asarray(scores, dtype=np.float64)
+
+
+class LocalDryRunBackbone:
+    """Deterministic zero-download MLLM stub for `--dry-run` end-to-end pipeline verification."""
+
+    def __init__(self) -> None:
+        self.commit_sha = "dry_run_local_cpu"
+
+    def load(self) -> None:
+        return None
+
+    def unload(self) -> None:
+        return None
+
+    def generate_answer(
+        self,
+        index: VideoIndex,
+        selected_actions: Sequence[RunTierAction],
+        is_multiple_choice: bool = False,
+        options: Optional[Sequence[str]] = None,
+        **kwargs: Any,
+    ) -> str:
+        # Groundedness proxy: succeeds cleanly when selected actions overlap relevant clip cues
+        if is_multiple_choice and options:
+            return "A"
+        if selected_actions:
+            c0 = index.clips[selected_actions[0].run.clip_indices[0]]
+            return f"Dry-run grounded answer based on clip {c0.clip_idx}: {c0.asr_text[:80]}"
+        return "Dry-run empty selection"
+
+    def grade_open_ended_with_rubric(
+        self,
+        question: str = "",
+        reference_answer: str = "",
+        candidate_answer: str = "",
+        **kwargs: Any,
+    ) -> Tuple[int, str]:
+        ref = reference_answer or kwargs.get("reference", "")
+        cand = candidate_answer or kwargs.get("candidate", "")
+        return deterministic_reference_rubric(ref, cand), "dry-run rubric"
+
+    def judge_answer(self, question: str, reference: str, candidate: str, **kwargs: Any) -> Tuple[int, str]:
+        return self.grade_open_ended_with_rubric(question, reference, candidate, **kwargs)
+
+
 def bootstrap_ci_over_episodes(
     per_episode_records: List[List[Tuple[float, List[str], bool, float]]],
     seeds: Sequence[int],
 ) -> Dict[str, Tuple[float, float]]:
     """Compute mean +- 95% CI across >=5 deterministic trace-sampling seeds (Sec. 5.4)."""
-    strata_keys = ["single_avg", "cg_iou", "sum", "drill", "jump", "comp", "silent", "overall", "dig_acc"]
+    strata_keys = ["single_avg", "cg_iou", "sum", "drill", "jump", "comp", "silent", "overall"]
     seed_agg: Dict[str, List[float]] = {k: [] for k in strata_keys}
     n_ep = len(per_episode_records)
 
@@ -808,8 +908,6 @@ def bootstrap_ci_over_episodes(
                     for st in strata_list:
                         if st in vals:
                             vals[st].append(acc_val * 100.0)
-                if "drill" in strata_list and iou_val >= -1.0:
-                    pass
 
         for k in strata_keys:
             if vals[k]:
@@ -822,38 +920,78 @@ def main() -> None:
     parser = argparse.ArgumentParser(
         description="Run TurnFocus Controlled Synthetic GPU Sanity-Check Suite (real HF weights, synthetic episodes)"
     )
+    parser.add_argument("--config", type=str, default=str(ROOT_DIR / "configs" / "colab_ae_suite.yaml"))
+    parser.add_argument("--hyperparams-config", type=str, default=str(ROOT_DIR / "configs" / "default_hyperparams.yaml"))
     parser.add_argument("--output-dir", type=str, default="results/synthetic_gpu_sanity_check")
-    parser.add_argument("--backbone", type=str, default="Qwen/Qwen3-VL-8B-Instruct")
-    parser.add_argument("--backbone-30b", type=str, default="Qwen/Qwen3-VL-30B-A3B-Instruct")
+    parser.add_argument("--backbone", type=str, default=None)
+    parser.add_argument("--backbone-30b", type=str, default=None)
     parser.add_argument("--skip-30b", action="store_true")
-    parser.add_argument("--aux-reranker", type=str, default="Qwen/Qwen3-VL-2B-Instruct")
+    parser.add_argument("--aux-reranker", type=str, default=None)
+    parser.add_argument("--seeds", type=str, default=None, help="Comma-separated bootstrap seeds (overrides config)")
+    parser.add_argument("--max-samples", type=int, default=None, help="Optional cap on test episodes for fast checks")
+    parser.add_argument(
+        "--dry-run",
+        action="store_true",
+        help="Run the full pipeline locally on CPU with deterministic zero-download stubs (no GPU/HF download)",
+    )
     args = parser.parse_args()
+
+    import yaml
+
+    suite_cfg: Dict[str, Any] = {}
+    if Path(args.config).exists():
+        suite_cfg = yaml.safe_load(Path(args.config).read_text(encoding="utf-8")) or {}
+    cfg_backbones = suite_cfg.get("backbones", {})
+    args.backbone = args.backbone or cfg_backbones.get("primary_dense", "Qwen/Qwen3-VL-8B-Instruct")
+    args.backbone_30b = args.backbone_30b or cfg_backbones.get("optional_moe_vl", "Qwen/Qwen3-VL-30B-A3B-Instruct")
+    args.aux_reranker = args.aux_reranker or cfg_backbones.get("aux_2b_reranker", "Qwen/Qwen3-VL-2B-Instruct")
+    seeds: List[int] = (
+        [int(s.strip()) for s in args.seeds.split(",") if s.strip()]
+        if args.seeds
+        else [int(s) for s in suite_cfg.get("seeds", [101, 202, 303, 404, 505])]
+    )
+    if args.dry_run:
+        args.skip_30b = True
 
     t_global_start = time.perf_counter()
     out_dir = Path(args.output_dir)
     out_dir.mkdir(parents=True, exist_ok=True)
-    set_deterministic_seed(101)
+    set_deterministic_seed(seeds[0])
 
     print("=== [Step 1/8] Checking Live HuggingFace Benchmark Registry & Streaming Real Frames ===")
     hf_shas: Dict[str, str] = {}
     hf_rows: Dict[str, List[Dict[str, Any]]] = {}
-    for b_name, meta in HF_BENCHMARK_REGISTRY.items():
-        sha, rows = fetch_hf_dataset_metadata_and_rows(meta["hf_repo"], max_rows=4)
-        if sha.startswith("error:") and "fallback_repo" in meta:
-            sha, rows = fetch_hf_dataset_metadata_and_rows(meta["fallback_repo"], max_rows=4)
-        hf_shas[b_name] = sha
-        hf_rows[b_name] = rows
-        print(f"  - {b_name:16s} ({meta['hf_repo']}): SHA={sha[:12]} | streamed_rows={len(rows)}")
+    real_doc_pool: List[Image.Image] = []
+    real_nat_pool: List[Image.Image] = []
+    if args.dry_run:
+        for b_name in HF_BENCHMARK_REGISTRY:
+            hf_shas[b_name] = "dry_run_offline"
+            hf_rows[b_name] = []
+        print("  [DRY-RUN] Skipping live HuggingFace network queries and 20GB checkpoint downloads.")
+    else:
+        for b_name, meta in HF_BENCHMARK_REGISTRY.items():
+            sha, rows = fetch_hf_dataset_metadata_and_rows(meta["hf_repo"], max_rows=4)
+            if sha.startswith("error:") and "fallback_repo" in meta:
+                sha, rows = fetch_hf_dataset_metadata_and_rows(meta["fallback_repo"], max_rows=4)
+            hf_shas[b_name] = sha
+            hf_rows[b_name] = rows
+            print(f"  - {b_name:16s} ({meta['hf_repo']}): SHA={sha[:12]} | streamed_rows={len(rows)}")
 
-    real_doc_pool, real_nat_pool = fetch_real_hf_background_images(max_imgs=24)
-    print(f"  Streamed {len(real_doc_pool)} real DocVQA slide frames & {len(real_nat_pool)} real natural/scene frames.")
+        real_doc_pool, real_nat_pool = fetch_real_hf_background_images(max_imgs=24)
+        print(f"  Streamed {len(real_doc_pool)} real DocVQA slide frames & {len(real_nat_pool)} real natural/scene frames.")
 
-    print("\n=== [Step 2/8] Loading Real CLIP Keyframe Dual-Encoder & Building Video-Disjoint Suite ===")
+    print("\n=== [Step 2/8] Loading Dual-Encoder & Building Video-Disjoint Suite ===")
     t_idx_start = time.perf_counter()
-    clip_encoder = RealCLIPDualEncoder("openai/clip-vit-base-patch32")
+    clip_encoder: Any = (
+        LocalDryRunEncoder()
+        if args.dry_run
+        else RealCLIPDualEncoder(cfg_backbones.get("keyframe_dual_encoder", "openai/clip-vit-base-patch32"))
+    )
     dev_data, test_data = build_complete_benchmark_suite(
         clip_encoder, hf_shas, hf_rows, real_doc_pool=real_doc_pool, real_nat_pool=real_nat_pool
     )
+    if args.max_samples is not None and args.max_samples > 0:
+        test_data = test_data[: args.max_samples]
     indexing_elapsed_sec = time.perf_counter() - t_idx_start
     total_indexed_hours = sum(ep.duration_sec for ep, _ in (dev_data + test_data)) / 3600.0
     sec_per_video_hour = indexing_elapsed_sec / max(total_indexed_hours, 1e-6)
@@ -862,28 +1000,33 @@ def main() -> None:
         f"({total_indexed_hours:.2f} video-hours, {sec_per_video_hour:.2f}s / hour of video)."
     )
 
-    # Operating profiles P0, P1, P2 with 2.5x R_L2/R_L1 cost ratio & 50% R_L2 cap (Fix 1)
-    profiles = {
-        "P0": OperatingProfile("P0", visual_token_budget=256, decode_compute_budget=4.5, allowed_tiers=(ResolutionTier.R_L1,)),
-        "P1": OperatingProfile(
-            "P1",
-            visual_token_budget=512,
-            decode_compute_budget=10.0,
-            allowed_tiers=(ResolutionTier.R_L1, ResolutionTier.R_L2),
-            tokens_per_clip_l1=64,
-            tokens_per_clip_l2=160,
-            max_l2_token_frac=0.50,
-        ),
-        "P2": OperatingProfile(
-            "P2",
-            visual_token_budget=1024,
-            decode_compute_budget=20.0,
-            allowed_tiers=(ResolutionTier.R_L1, ResolutionTier.R_L2),
-            tokens_per_clip_l1=64,
-            tokens_per_clip_l2=160,
-            max_l2_token_frac=0.50,
-        ),
-    }
+    # Load Operating Profiles (P0, P1, P2) and base hyperparameters from configs/default_hyperparams.yaml
+    if Path(args.hyperparams_config).exists():
+        profiles = load_operating_profiles_from_yaml(args.hyperparams_config)
+        yaml_hp_defaults = TurnFocusHyperparams.from_yaml(args.hyperparams_config)
+    else:
+        yaml_hp_defaults = TurnFocusHyperparams()
+        profiles = {
+            "P0": OperatingProfile("P0", visual_token_budget=256, decode_compute_budget=4.5, allowed_tiers=(ResolutionTier.R_L1,)),
+            "P1": OperatingProfile(
+                "P1",
+                visual_token_budget=512,
+                decode_compute_budget=10.0,
+                allowed_tiers=(ResolutionTier.R_L1, ResolutionTier.R_L2),
+                tokens_per_clip_l1=64,
+                tokens_per_clip_l2=160,
+                max_l2_token_frac=0.50,
+            ),
+            "P2": OperatingProfile(
+                "P2",
+                visual_token_budget=1024,
+                decode_compute_budget=20.0,
+                allowed_tiers=(ResolutionTier.R_L1, ResolutionTier.R_L2),
+                tokens_per_clip_l1=64,
+                tokens_per_clip_l2=160,
+                max_l2_token_frac=0.50,
+            ),
+        }
 
     print("\n=== [Step 3/8] Running Frozen Video-Disjoint Dev Calibration (App. B.3, Strict tau_H < 15%) ===")
     t_cal_start = time.perf_counter()
@@ -943,22 +1086,33 @@ def main() -> None:
     clip_sha = clip_encoder.commit_sha
     clip_model_id = clip_encoder.model_id
     del clip_encoder
-    import gc, torch
+    import gc
     gc.collect()
-    if torch.cuda.is_available():
-        torch.cuda.empty_cache()
+    if not args.dry_run:
+        import torch
+
+        if torch.cuda.is_available():
+            torch.cuda.empty_cache()
 
     print(f"\n=== [Step 4/8] Loading Decoupled 2B Reranker ({args.aux_reranker}) & Backbone ({args.backbone}) ===")
-    # On 24GB GPUs (L4), keep decoupled 2B probe on CPU so 8B BF16 backbone stays 100% resident on GPU!
-    vram_gb = (torch.cuda.get_device_properties(0).total_memory / (1024**3)) if torch.cuda.is_available() else 0.0
-    rerank_dev = "cuda" if vram_gb >= 32.0 else "cpu"
-    reranker_2b = Decoupled2BReranker(model_id=args.aux_reranker, device=rerank_dev)
-    reranker_2b.load()
-    backbone = MLLMBackboneRunner(model_id=args.backbone)
-    backbone.load()
-    print(f"  Loaded backbone SHA={backbone.commit_sha[:12]} (100% GPU) | 2B Reranker SHA={reranker_2b.commit_sha[:12]} ({rerank_dev})")
+    if args.dry_run:
+        reranker_2b: Any = LocalDryRunReranker()
+        backbone: Any = LocalDryRunBackbone()
+        rerank_dev = "cpu (dry-run)"
+    else:
+        import torch
 
-    base_hp = TurnFocusHyperparams(
+        # On 24GB GPUs (L4), keep decoupled 2B probe on CPU so 8B BF16 backbone stays 100% resident on GPU!
+        vram_gb = (torch.cuda.get_device_properties(0).total_memory / (1024**3)) if torch.cuda.is_available() else 0.0
+        rerank_dev = "cuda" if vram_gb >= 32.0 else "cpu"
+        reranker_2b = Decoupled2BReranker(model_id=args.aux_reranker, device=rerank_dev)
+        reranker_2b.load()
+        backbone = MLLMBackboneRunner(model_id=args.backbone)
+        backbone.load()
+    print(f"  Loaded backbone SHA={backbone.commit_sha[:12]} | 2B Reranker SHA={reranker_2b.commit_sha[:12]} ({rerank_dev})")
+
+    base_hp = replace(
+        yaml_hp_defaults,
         mu_b=frozen_cal.mu_b,
         gamma_conf=frozen_cal.gamma_conf,
     )
@@ -1048,8 +1202,7 @@ def main() -> None:
     highres_dig_ref_acc = max(1e-6, float(np.mean(dig_highres_ref_scores)) * 100.0)
     print(f"  High-Resolution Reference Accuracy on DIG turns: {highres_dig_ref_acc:.1f}%")
 
-    print("\n=== [Step 5/7] Evaluating All 6 Methods Across Profiles P0, P1, P2 & LP Optimality Audit ===")
-    seeds = [101, 202, 303, 404, 505]
+    print("\n=== [Step 5/8] Evaluating All 6 Methods Across Profiles P0, P1, P2 & LP Optimality Audit ===")
     methods = [
         "Uniform FPS Sampling",
         "Top-k CLIP/ASR",
@@ -1261,8 +1414,9 @@ def main() -> None:
     # Profile exact online localization latency on hour-long M=120 clip indices (Table 2b)
     rng_lat = np.random.default_rng(2026)
     hour_clips = []
+    ep_ref_idx = min(5, len(test_data) - 1)
     for i in range(120):
-        c_base = test_data[5][0].clips[i % len(test_data[5][0].clips)]
+        c_base = test_data[ep_ref_idx][0].clips[i % len(test_data[ep_ref_idx][0].clips)]
         hour_clips.append(
             AtomicClip(
                 clip_idx=i,
@@ -1283,16 +1437,16 @@ def main() -> None:
     trig_flags = []
 
     def _hour_rerank_cb(q_s: str, top_c: np.ndarray) -> np.ndarray:
-        mapped = np.array([int(x) % len(test_data[5][0].clips) for x in top_c], dtype=np.int32)
-        return reranker_2b.score_clips(q_s, mapped, test_indices[5], make_frame_fetcher(test_data[5][0]))
+        mapped = np.array([int(x) % len(test_data[ep_ref_idx][0].clips) for x in top_c], dtype=np.int32)
+        return reranker_2b.score_clips(q_s, mapped, test_indices[ep_ref_idx], make_frame_fetcher(test_data[ep_ref_idx][0]))
 
     hour_probe = ZeroConflictUncertaintyProbe(k_pool=16, tau_h=frozen_cal.tau_h, reranker_fn=_hour_rerank_cb)
     hour_engine = TurnFocusEngine(router=calibrated_router, dig_calibrator=dig_cal, probe=hour_probe, hp=base_hp)
     hour_sess = SessionState.initialize(hour_index.num_clips)
     # Profile latency using real tiled multimodal query scores (not high-entropy white noise)
     sample_query_pairs = [
-        (ep_i, t_i, ep.turns[t_i].query)
-        for ep_i in range(5, 12)
+        (ep_i, t_i, test_data[ep_i][0].turns[t_i].query)
+        for ep_i in range(ep_ref_idx, min(12, len(test_data)))
         for t_i in range(len(test_data[ep_i][0].turns))
     ]
 
@@ -1515,7 +1669,13 @@ def main() -> None:
     }
     if not args.skip_30b:
         pinned_models[args.backbone_30b] = sha_30b
+    scope_notice_str = (
+        "DRY_RUN_LOCAL_CPU_PIPELINE_CHECK"
+        if args.dry_run
+        else "SYNTHETIC_CONTROLLED_SANITY_CHECK_NOT_REAL_BENCHMARKS"
+    )
     prov = collect_environment_provenance(extra_models=pinned_models)
+    prov["scope_notice"] = scope_notice_str
     prov["compute_log_gpu_hours"] = {
         "offline_indexing_gpu_h": round(indexing_elapsed_sec / 3600.0, 4),
         "dev_calibration_gpu_h": round(cal_elapsed_sec / 3600.0, 4),
@@ -1527,7 +1687,13 @@ def main() -> None:
 
     lp_summary = {k: summarize_lp_optimality_distribution(v) for k, v in lp_ratios_by_slice.items()}
     full_payload = {
-        "evaluation_scope": "SYNTHETIC_CONTROLLED_SANITY_CHECK_NOT_REAL_BENCHMARKS",
+        "evaluation_scope": scope_notice_str,
+        "scope_notice": (
+            "Controlled synthetic audiovisual sanity-check suite (4 Dev / 15 Test template episodes) "
+            "intended for functional, LP-audit, and latency verification — NOT full 8-benchmark evaluation."
+        ),
+        "generation_command": " ".join(sys.argv),
+        "seeds": seeds,
         "provenance": prov,
         "hf_dataset_shas": hf_shas,
         "calibration": asdict(frozen_cal),

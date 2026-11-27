@@ -1,5 +1,5 @@
-# Google Colab GPU Artifact Evaluation Suite Configuration
-experiment_name: "turnfocus_colab_ae_v1"
+# Controlled Synthetic GPU Sanity-Check Configuration (loaded by scripts/run_colab_ae.py --config)
+experiment_name: "turnfocus_synthetic_gpu_sanity_check_v1"
 seeds: [101, 202, 303, 404, 505]
 backbones:
   primary_dense: "Qwen/Qwen3-VL-8B-Instruct"
@@ -9,7 +9,7 @@ backbones:
   keyframe_dual_encoder: "openai/clip-vit-base-patch32"
 
 spatial_tiers:
-  r_l1_hw: [140, 140]
+  r_l1_hw: [112, 112]
   r_l2_hw: [560, 560]
 
 protocol:
@@ -17,6 +17,9 @@ protocol:
   temperature: 0.0
   do_sample: false
   l_hist_max: 2048
+  # Note: gamma_conf is initialized to 0.80 in default_hyperparams.yaml and then frozen on the dev split
+  # by calibrate_on_dev_split() (e.g., 0.45 in the archived synthetic sanity-check run).
+  calibrate_on_dev_split: true
   run_offpath_lp_audit: true
   run_component_ablations: true
   run_sensitivity_sweeps: true

@@ -17,15 +17,17 @@ This document maps sections, equations, and algorithms of the companion TurnFocu
 ├── LICENSE                                # MIT License (code)
 ├── CITATION.cff                           # Citation metadata (updated with full authors/DOI upon publication)
 ├── zenodo.json                            # Draft archival metadata for future Zenodo deposit
-├── Dockerfile                             # Reproducible CUDA 12.4 + Python + PyTorch container spec
+├── Dockerfile                             # Portable CUDA 12.4 container spec (see provenance.json for Colab runtime)
+├── Makefile                               # Unified entrypoints (install-cpu, test, smoke, dry-run, verify-archive, anon-zip)
 ├── pyproject.toml                         # PEP 621 installable package (`turnfocus`)
-├── requirements-colab.txt                 # Runtime dependencies for GPU VMs
+├── requirements-cpu.txt                   # Minimal pinned CPU-only dependencies (tests, smoke, --dry-run)
+├── requirements-colab.txt                 # GPU/HuggingFace dependencies for Colab/CUDA runs
 ├── SHA256SUMS.txt                         # Cryptographic SHA-256 manifest of tracked repository files
 │
 ├── configs/
-│   ├── default_hyperparams.yaml           # Hyperparameter defaults & sweep grids
-│   ├── colab_ae_suite.yaml                # Controlled GPU sanity-check configuration
-│   └── full_cluster_benchmark.yaml        # Full multi-node sharded benchmark configuration template
+│   ├── default_hyperparams.yaml           # Loaded by TurnFocusHyperparams.from_yaml() & load_operating_profiles_from_yaml()
+│   ├── colab_ae_suite.yaml                # Loaded by scripts/run_colab_ae.py --config
+│   └── full_cluster_benchmark.yaml        # Reference cluster launch specification template (external Slurm/Ray)
 │
 ├── src/turnfocus/
 │   ├── __init__.py
@@ -49,9 +51,9 @@ This document maps sections, equations, and algorithms of the companion TurnFocu
 │
 ├── scripts/
 │   ├── run_smoke_test.sh                  # <60s local mathematical & functional verification
-│   ├── run_colab_ae.py                    # Controlled synthetic GPU sanity-check driver (real Qwen3-VL + CLIP weights)
+│   ├── run_colab_ae.py                    # Controlled synthetic GPU sanity-check runner (supports --dry-run, --max-samples, --seeds)
+│   ├── verify_archive.py                  # Automated SHA-256, JSON schema, and archive-vs-candidate diff verifier
 │   ├── launch_colab_cli.sh                # Google Colab CLI helper script
-│   ├── upload_to_github.py                # Stdlib GitHub API uploader (reads GITHUB_TOKEN from env)
 │   ├── export_anonymous_snapshot.sh       # Builds a metadata-free zip for double-blind review submission
 │   └── generate_checksums.py              # SHA-256 manifest generator (excludes OS metadata)
 │

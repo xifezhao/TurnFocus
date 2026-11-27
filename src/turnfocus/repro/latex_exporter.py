@@ -47,6 +47,8 @@ def export_markdown_and_latex_summary(results: Dict[str, Any]) -> str:
     ]
     prov = results.get("provenance", {})
     out.append(f"- **Timestamp (UTC)**: `{prov.get('timestamp_utc', 'N/A')}`")
+    out.append(f"- **Generation Command**: `{results.get('generation_command', 'python3 scripts/run_colab_ae.py --output-dir results/synthetic_gpu_sanity_check')}`")
+    out.append(f"- **Bootstrap Seeds**: `{results.get('seeds', [101, 202, 303, 404, 505])}`")
     out.append(f"- **GPU Hardware**: `{prov.get('gpu_name', 'CPU')}` ({prov.get('gpu_vram_gb', 0)} GB VRAM)")
     out.append(f"- **Stack**: Python `{prov.get('python_version')}`, PyTorch `{prov.get('torch_version')}`, CUDA `{prov.get('cuda_version')}`, Transformers `{prov.get('transformers_version')}`")
     if "pinned_model_shas" in prov:
@@ -107,5 +109,21 @@ def export_markdown_and_latex_summary(results: Dict[str, Any]) -> str:
                 f"| {v_name} | {fmt_mean_ci(*row['sum'])} | {fmt_mean_ci(*row['drill'])} | "
                 f"{fmt_mean_ci(*row['comp'])} | {fmt_mean_ci(*row['silent'])} | {fmt_mean_ci(*row['avg'])} |"
             )
+        out.append("")
+        out.append(
+            "> **Ablation Interpretability Note**: On this small 15-episode synthetic sanity-check suite, "
+            "several metrics saturate (`100.0±0.0`), making variants `(i)`, `(ii)`, `(iv-a)`, and `(vi)` "
+            "indistinguishable at the accuracy level (and `(vi)` does not trigger when router confidence "
+            "stays above `gamma_conf`). Although unit tests confirm every ablation switch alters the "
+            "internal objective value, Table 3 in this synthetic archive verifies switch wiring only and "
+            "is **not** discriminative empirical evidence on real long-video benchmarks."
+        )
+
+    out.append("\n## 8. Companion Plot Coordinates (`fig3_pgfplots_coords.tex`)")
+    out.append(
+        "- `fig3_pgfplots_coords.tex` is auto-generated from `full_empirical_results.json`: "
+        "**Panel (a)** maps directly to `pareto_frontier` (profiles `P0, P1, P2`), and "
+        "**Panel (b)** maps directly to `dig_retention` (normalized against `highres_dig_reference_acc_pct`)."
+    )
 
     return "\n".join(out) + "\n"

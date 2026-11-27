@@ -1,0 +1,6 @@
+# Minimal CPU-only dependencies for local unit tests, smoke check, and --dry-run verification
+numpy==1.26.4
+scipy==1.14.1
+PyYAML==6.0.2
+Pillow==11.0.0
+pytest==8.3.4

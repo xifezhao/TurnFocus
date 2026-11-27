@@ -78,3 +78,16 @@ def test_verbatim_prompt_templates_and_parsers():
     v, rat = parse_judge_verdict('{"verdict": 1, "rationale": "Exact match on x = 42."}')
     assert v == 1
     assert "42" in rat
+
+
+def test_yaml_configs_load_cleanly() -> None:
+    """Verify configs/default_hyperparams.yaml loads into TurnFocusHyperparams and OperatingProfiles."""
+    from pathlib import Path
+    from turnfocus.evaluation.pipeline import TurnFocusHyperparams, load_operating_profiles_from_yaml
+
+    cfg_path = Path(__file__).resolve().parent.parent / "configs" / "default_hyperparams.yaml"
+    hp = TurnFocusHyperparams.from_yaml(cfg_path)
+    profiles = load_operating_profiles_from_yaml(cfg_path)
+    assert hp.w_b == 3 and hp.m_cand == 64 and abs(hp.theta_nms - 0.50) < 1e-9
+    assert set(profiles.keys()) == {"P0", "P1", "P2"}
+    assert profiles["P1"].visual_token_budget == 512 and profiles["P1"].max_l2_token_frac == 0.50

@@ -13,8 +13,15 @@ Reference implementation, mathematical property verification suite, and evaluati
 Verify installation and run the complete mathematical property test suite (Lemma 1 concave composition, Theorem 1a normalization/monotonicity/submodularity across 300 random subset pairs, exact equivalence of $O(L_{\mathrm{run}} K_{\mathrm{nbr}})$ incremental marginal updates, Theorem 1b exact discrete optimum $\widetilde{\mathrm{OPT}} \le \mathrm{UB}(S)$ via HiGHS LP, $O(M)$ column-stochastic $\mathbf{T}_{\mathrm{band}}$, clamped $\eta_{\mathrm{mod}} \in [0, 1]$, exact $M_{\mathrm{top}} + M_{\mathrm{strat}} = M_{\mathrm{cand}}$, and strict video-disjoint split guards):
 
 ```bash
-pip install -e ".[dev]"
-bash scripts/run_smoke_test.sh
+# Minimal CPU-only install + 13 unit tests + <60s smoke check:
+make install-cpu
+make smoke
+
+# Zero-download CPU end-to-end pipeline dry-run + archive schema diff (<5s):
+make dry-run
+
+# Verify SHA256SUMS.txt and archived JSON/Markdown consistency:
+make verify-archive
 ```
 
 ---
@@ -25,11 +32,12 @@ The archived outputs in [`results/synthetic_gpu_sanity_check/`](results/syntheti
 
 - **Important**: These synthetic sanity-check runs verify end-to-end model execution, LP optimality auditing, and wall-clock localization latency (`8.98 ms` P50 on $M=120$ clip indices). They are **not** full evaluations on the 8 public real-video benchmarks (Video-MME, LongVideoBench, MLVU, LVBench, CG-Bench, SVBench, OmniMMI, VideoMemBench), which require downloading the official multi-terabyte video corpora separately.
 
-To reproduce the GPU sanity check on a CUDA machine or Google Colab GPU:
+To reproduce the GPU sanity check on a CUDA machine or Google Colab GPU (or run a fast subset with `--max-samples` / `--seeds` / `--dry-run`):
 
 ```bash
-pip install -e ".[gpu,dev]"
-python3 scripts/run_colab_ae.py --output-dir results/synthetic_gpu_sanity_check
+make install-gpu
+python3 scripts/run_colab_ae.py --config configs/colab_ae_suite.yaml --output-dir results/synthetic_gpu_sanity_check
+python3 scripts/verify_archive.py --compare-dir results/synthetic_gpu_sanity_check
 ```
 
 ---
