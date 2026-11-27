@@ -1,6 +1,6 @@
 # TurnFocus Codebase Audit & Manuscript Traceability
 
-This document maps sections, equations, and algorithms of the companion TurnFocus manuscript (currently under anonymous double-blind peer review; camera-ready paper link/arXiv DOI will be added upon acceptance) to exact files in this repository.
+This document maps sections, equations, and algorithms of the companion TurnFocus manuscript (paper URL and arXiv/DOI will be populated upon camera-ready publication) to exact files in this repository. For double-blind review submissions, generate a strictly anonymized supplementary archive with `bash scripts/export_anonymous_snapshot.sh` rather than linking this public repository.
 
 > **Note**: This repository has not yet been externally evaluated by an Artifact Evaluation Committee. The archived GPU results under `results/synthetic_gpu_sanity_check/` are from a controlled synthetic sanity-check suite exercising real unmodified HuggingFace model weights (`Qwen/Qwen3-VL-8B-Instruct`, `Qwen/Qwen3-VL-2B-Instruct`, `openai/clip-vit-base-patch32`), **not** full 8-benchmark real-video runs.
 
@@ -15,7 +15,7 @@ This document maps sections, equations, and algorithms of the companion TurnFocu
 ├── ARTIFACT_APPENDIX.md                   # Self-assessed reproducibility appendix (no external badge claimed)
 ├── TREE_AUDIT.md                          # Equation-to-code traceability matrix
 ├── LICENSE                                # MIT License (code)
-├── CITATION.cff                           # Citation metadata (anonymous submission placeholder; updated on acceptance)
+├── CITATION.cff                           # Citation metadata (updated with full authors/DOI upon publication)
 ├── zenodo.json                            # Draft archival metadata for future Zenodo deposit
 ├── Dockerfile                             # Reproducible CUDA 12.4 + Python + PyTorch container spec
 ├── pyproject.toml                         # PEP 621 installable package (`turnfocus`)
@@ -52,6 +52,7 @@ This document maps sections, equations, and algorithms of the companion TurnFocu
 │   ├── run_colab_ae.py                    # Controlled synthetic GPU sanity-check driver (real Qwen3-VL + CLIP weights)
 │   ├── launch_colab_cli.sh                # Google Colab CLI helper script
 │   ├── upload_to_github.py                # Stdlib GitHub API uploader (reads GITHUB_TOKEN from env)
+│   ├── export_anonymous_snapshot.sh       # Builds a metadata-free zip for double-blind review submission
 │   └── generate_checksums.py              # SHA-256 manifest generator (excludes OS metadata)
 │
 └── results/

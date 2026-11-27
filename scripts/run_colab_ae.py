@@ -1,21 +1,23 @@
 #!/usr/bin/env python3
-"""Self-contained Google Colab GPU Artifact Evaluation Runner for TurnFocus.
+"""Self-contained Controlled Synthetic GPU Sanity-Check Runner for TurnFocus.
 
-Executes strictly real, auditable experiments on unmodified HuggingFace checkpoints:
-  - Streams live benchmark metadata & commit SHAs from all 8 public HuggingFace repositories
-    (Video-MME, LongVideoBench, MLVU, LVBench, CG-Bench, SVBench, OmniMMI, VideoMemBench).
-  - Encodes high-resolution (560x560) long-video keyframes using real `openai/clip-vit-base-patch32`
-    on GPU alongside real Sobel/Laplacian + stroke-OCR DIG density estimation.
-  - Strictly enforces video-disjoint Train / Dev / Test partitions (`verify_video_disjoint_splits`).
+Exercises real unmodified HuggingFace model checkpoints on a small controlled synthetic
+audiovisual sanity-check suite (4 Dev / 15 Test template-constructed episodes) for
+end-to-end functional, latency, and LP-optimality verification — NOT full evaluation on
+the 8 public real-video benchmarks:
+  - Queries live benchmark metadata & commit SHAs from the 8 public HuggingFace repositories
+    for provenance logging (the synthetic episodes themselves do not evaluate full benchmark videos).
+  - Encodes high-resolution (560x560) synthetic/streamed keyframes using real
+    `openai/clip-vit-base-patch32` on GPU alongside Sobel/Laplacian + stroke-OCR DIG estimation.
+  - Enforces video-disjoint Dev / Test partitions (`verify_video_disjoint_splits`).
   - Runs frozen dev-split calibration (`calibrate_on_dev_split`) for mu_B, alpha_ocr, ECDF Calib(.),
     tau_dig, router temperature/gamma_conf, and entropy gate tau_H (<15% trigger target).
   - Loads real decoupled 2B probe (`Qwen/Qwen3-VL-2B-Instruct`, mid-layer L11-L15 attention) and
     real unmodified BF16 backbone (`Qwen/Qwen3-VL-8B-Instruct`, plus optional 30B-A3B on 80GB GPUs)
-    via the exact retrieve-then-full-prefill prompt of Figure 4 and temp-0.0 binary judge of Figure 5.
-  - Evaluates all 6 methods across Operating Profiles P0, P1, P2, 5 deterministic bootstrap/trace seeds,
-    off-path HiGHS LP optimality certificates (Eq. 18), wall-clock latency profiling (P50/P95 ms on
-    hour-long M=120 indices), all 8 component-wise ablations (Table 3), all 4 sensitivity sweeps
-    (Table 6), silent-video modality breakdown (Table 11), and Cohen's kappa judge audit.
+    via the retrieve-then-full-prefill prompt of Figure 4 and temp-0.0 binary judge of Figure 5.
+  - Logs Operating Profiles P0, P1, P2, off-path HiGHS LP optimality certificates (Eq. 18),
+    wall-clock localization latency profiling (P50/P95 ms on M=120 indices), component ablations,
+    sensitivity sweeps, and Cohen's kappa judge audit into `results/synthetic_gpu_sanity_check/`.
 """
 
 from __future__ import annotations
@@ -817,8 +819,10 @@ def bootstrap_ci_over_episodes(
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="Run full TurnFocus GPU Artifact Evaluation")
-    parser.add_argument("--output-dir", type=str, default="results")
+    parser = argparse.ArgumentParser(
+        description="Run TurnFocus Controlled Synthetic GPU Sanity-Check Suite (real HF weights, synthetic episodes)"
+    )
+    parser.add_argument("--output-dir", type=str, default="results/synthetic_gpu_sanity_check")
     parser.add_argument("--backbone", type=str, default="Qwen/Qwen3-VL-8B-Instruct")
     parser.add_argument("--backbone-30b", type=str, default="Qwen/Qwen3-VL-30B-A3B-Instruct")
     parser.add_argument("--skip-30b", action="store_true")

@@ -26,7 +26,7 @@ This artifact provides the reference source code, configuration files, mathemati
 
 ## A.3 Self-Assessed Reproducibility Checklist
 
-1. **Availability Preparation**: Includes `LICENSE` (MIT), `CITATION.cff`, `zenodo.json`, `Dockerfile`, and `SHA256SUMS.txt` (verified with zero missing entries). Authors, affiliations, paper URL, and DOI will be populated upon camera-ready acceptance.
+1. **Availability & Double-Blind Preparation**: Includes `LICENSE` (MIT), `CITATION.cff`, `zenodo.json`, `Dockerfile`, `SHA256SUMS.txt` (verified with zero missing entries), and `scripts/export_anonymous_snapshot.sh` to package a metadata-free supplementary archive for double-blind review (avoiding public GitHub repository de-anonymization). Full authors, affiliations, paper URL, and DOI will be populated upon camera-ready publication.
 2. **Functional Verification**:
    - Exact implementations of Equations (1)–(18) and Algorithm 1 in `src/turnfocus/`.
    - `scripts/run_smoke_test.sh` executes `tests/` verifying normalization, monotonicity, submodularity, incremental-vs-exact marginal equivalence, exact discrete optimum $\widetilde{\mathrm{OPT}} \le \mathrm{UB}(S)$, column-stochastic $\mathbf{T}_{\mathrm{band}}$, clamped $\eta_{\mathrm{mod}}$, exact cardinality $M_{\mathrm{top}} + M_{\mathrm{strat}} = M_{\mathrm{cand}}$, and strict video-disjoint split guards.

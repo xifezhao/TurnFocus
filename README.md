@@ -1,6 +1,8 @@
 # TurnFocus — Research Artifact & Reproducibility Codebase
 
-> **Review & Badge Status Notice**: This repository accompanies a manuscript currently under anonymous peer review. It has **not** yet undergone external ACM/IEEE Artifact Evaluation and has **not** been awarded any official artifact badges. The checklist in [`ARTIFACT_APPENDIX.md`](ARTIFACT_APPENDIX.md) is a **self-assessed reproducibility checklist** provided to facilitate review.
+> **Review, Anonymity & Badge Status Notice**:
+> - **No Official Badges Awarded**: This repository has **not** yet undergone external ACM/IEEE Artifact Evaluation and has **not** been awarded any official artifact badges. [`ARTIFACT_APPENDIX.md`](ARTIFACT_APPENDIX.md) is a **self-assessed reproducibility checklist**.
+> - **Double-Blind Review Policy**: This public GitHub repository is the open-source reference codebase and is **not** an anonymized double-blind submission link. During double-blind peer review (e.g., ACL ARR / ACM), authors and reviewers should use a strictly anonymized supplementary archive (generated via `bash scripts/export_anonymous_snapshot.sh`, or hosted on an anonymous mirror such as `anonymous.4open.science`) rather than linking this public repository in the anonymized manuscript.
 
 Reference implementation, mathematical property verification suite, and evaluation scripts for **TurnFocus: Intent-Adaptive Submodular Evidence Grounding for Multi-Turn Long-Video Question Answering**.
 

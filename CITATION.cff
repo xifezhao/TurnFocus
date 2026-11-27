@@ -1,13 +1,12 @@
 cff-version: 1.2.0
-message: "If you use this codebase, please cite the TurnFocus manuscript (currently under anonymous double-blind peer review; author list, affiliation, and DOI will be populated upon acceptance)."
+message: "If you use this codebase, please cite the TurnFocus paper. Full author list, institutional affiliations, paper URL, and DOI will be populated upon camera-ready publication."
 title: "TurnFocus: Intent-Adaptive Submodular Evidence Grounding for Multi-Turn Long-Video Question Answering"
 version: "1.0.0"
 date-released: "2026-11-27"
 license: "MIT"
 type: software
-repository-code: "https://github.com/xifezhao/TurnFocus"
 authors:
-  - name: "Anonymous Authors (Double-Blind Review)"
+  - name: "TurnFocus Authors"
 keywords:
   - multimodal large language models
   - long-video question answering
