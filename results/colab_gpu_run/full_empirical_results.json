@@ -1,0 +1,1142 @@
+{
+  "provenance": {
+    "timestamp_utc": "2026-11-27T02:17:14.342345+00:00",
+    "python_version": "3.13.16",
+    "platform": "Linux-6.6.159+-x86_64-with-glibc2.39",
+    "processor": "x86_64",
+    "cpu_count": 12,
+    "numpy_version": "2.4.6",
+    "scipy_version": "1.18.1",
+    "torch_version": "2.14.1+cu130",
+    "cuda_available": true,
+    "cuda_version": "13.0",
+    "gpu_count": 1,
+    "gpu_name": "NVIDIA A100-SXM4-40GB",
+    "gpu_vram_gb": 39.49,
+    "transformers_version": "5.24.1",
+    "git_commit": "standalone_archive",
+    "pinned_model_shas": {
+      "Qwen/Qwen3-VL-8B-Instruct": "0c351dd01ed87e9c1b53cbc748cba10e6187ff3b",
+      "Qwen/Qwen3-VL-2B-Instruct": "89644892e4d85e24eaac8bacfd4f463576704203",
+      "openai/clip-vit-base-patch32": "3d74acf9a28c67741b2f4f2ea7635f0aaf6f0268"
+    },
+    "compute_log_gpu_hours": {
+      "offline_indexing_gpu_h": 0.011,
+      "dev_calibration_gpu_h": 0.0001,
+      "test_evaluation_gpu_h": 0.3605,
+      "total_wall_sec": 1337.95,
+      "unique_mllm_prefill_calls": 805
+    }
+  },
+  "hf_dataset_shas": {
+    "Video-MME": "ead1408f75b618502df9a1d8e0950166bf0a2a0b",
+    "LongVideoBench": "60d1c89c1919a198b73be39c2babb213b29d6a5c",
+    "MLVU": "06ddc388aa34746b3abba77972b7a7dfd977f7a3",
+    "LVBench": "0caedb92002cc268bad486449e551c76f0485670",
+    "CG-Bench": "aa63c0b7f74b5b43b5e0c1f012ea96bc9f460c57",
+    "SVBench": "2a89eaf00c5ac1cdd3abd717a9347052d39c4091",
+    "OmniMMI": "702488939108f057488dcb09fa0727e58b964174",
+    "VideoMemBench": "e4a76fd473c27fb914e6ea98365cc69d1d2cd7c9"
+  },
+  "calibration": {
+    "mu_b": 0.4218582755353266,
+    "alpha_ocr": 0.0,
+    "tau_dig": 0.7,
+    "dig_roc_auc": 1.0,
+    "router_temperature": 0.25,
+    "gamma_conf": 0.45,
+    "router_dev_ece": 1.0596811661489625e-07,
+    "tau_h": 0.9211941446350258,
+    "dev_reranker_trigger_rate": 0.16666666666666666
+  },
+  "highres_dig_reference_acc_pct": 100.0,
+  "judge_cohens_kappa": 1.0,
+  "offline_agentic_mean_latency_sec": 2.3670619294871766,
+  "main_comparison": {
+    "Uniform FPS Sampling": {
+      "single_avg": [
+        32.23809523809524,
+        12.044330904254004
+      ],
+      "cg_iou": [
+        0.0,
+        0.0
+      ],
+      "sum": [
+        100.0,
+        0.0
+      ],
+      "drill": [
+        37.84343434343434,
+        7.968268794542222
+      ],
+      "jump": [
+        0.0,
+        0.0
+      ],
+      "comp": [
+        24.761904761904766,
+        18.998959827593197
+      ],
+      "silent": [
+        24.0,
+        23.30303381693771
+      ],
+      "overall": [
+        36.58823529411765,
+        6.251373548686902
+      ],
+      "dig_acc": [
+        0.0,
+        0.0
+      ]
+    },
+    "Top-k CLIP/ASR": {
+      "single_avg": [
+        100.0,
+        0.0
+      ],
+      "cg_iou": [
+        16.666666666666664,
+        3.1192436476781993e-15
+      ],
+      "sum": [
+        100.0,
+        0.0
+      ],
+      "drill": [
+        100.0,
+        0.0
+      ],
+      "jump": [
+        100.0,
+        0.0
+      ],
+      "comp": [
+        100.0,
+        0.0
+      ],
+      "silent": [
+        74.0,
+        23.30303381693771
+      ],
+      "overall": [
+        94.62745098039217,
+        4.691334365654096
+      ],
+      "dig_acc": [
+        0.0,
+        0.0
+      ]
+    },
+    "Static Visual Token Pruning": {
+      "single_avg": [
+        100.0,
+        0.0
+      ],
+      "cg_iou": [
+        16.666666666666664,
+        3.1192436476781993e-15
+      ],
+      "sum": [
+        100.0,
+        0.0
+      ],
+      "drill": [
+        69.74242424242425,
+        14.637322218715724
+      ],
+      "jump": [
+        0.0,
+        0.0
+      ],
+      "comp": [
+        42.85714285714287,
+        22.123244146525618
+      ],
+      "silent": [
+        24.0,
+        23.30303381693771
+      ],
+      "overall": [
+        53.333333333333336,
+        7.61966947691973
+      ],
+      "dig_acc": [
+        0.0,
+        0.0
+      ]
+    },
+    "Pure Facility-Location": {
+      "single_avg": [
+        100.0,
+        0.0
+      ],
+      "cg_iou": [
+        31.444444444444436,
+        2.1594573040427267
+      ],
+      "sum": [
+        100.0,
+        0.0
+      ],
+      "drill": [
+        87.41919191919192,
+        10.559109711007899
+      ],
+      "jump": [
+        100.0,
+        0.0
+      ],
+      "comp": [
+        100.0,
+        0.0
+      ],
+      "silent": [
+        26.0,
+        23.30303381693771
+      ],
+      "overall": [
+        87.09803921568627,
+        7.080143796413489
+      ],
+      "dig_acc": [
+        0.0,
+        0.0
+      ]
+    },
+    "Offline Agentic Search": {
+      "single_avg": [
+        78.61904761904762,
+        16.03035851123383
+      ],
+      "cg_iou": [
+        26.206349206349206,
+        5.343452837077943
+      ],
+      "sum": [
+        90.47619047619047,
+        10.862297241368827
+      ],
+      "drill": [
+        6.040404040404041,
+        6.904059751649139
+      ],
+      "jump": [
+        100.0,
+        0.0
+      ],
+      "comp": [
+        74.76190476190477,
+        23.613759621533827
+      ],
+      "silent": [
+        26.0,
+        23.30303381693771
+      ],
+      "overall": [
+        59.882352941176464,
+        10.924162699311758
+      ],
+      "dig_acc": [
+        0.0,
+        0.0
+      ]
+    },
+    "TurnFocus (Ours)": {
+      "single_avg": [
+        100.0,
+        0.0
+      ],
+      "cg_iou": [
+        16.666666666666664,
+        3.1192436476781993e-15
+      ],
+      "sum": [
+        100.0,
+        0.0
+      ],
+      "drill": [
+        67.82323232323233,
+        24.808329791491275
+      ],
+      "jump": [
+        100.0,
+        0.0
+      ],
+      "comp": [
+        100.0,
+        0.0
+      ],
+      "silent": [
+        50.0,
+        0.0
+      ],
+      "overall": [
+        81.5686274509804,
+        5.303371144519641
+      ],
+      "dig_acc": [
+        0.0,
+        0.0
+      ]
+    }
+  },
+  "pareto_frontier": {
+    "Uniform FPS Sampling": [
+      {
+        "profile": "P0",
+        "tokens": 192,
+        "mean": 19.176470588235297,
+        "ci95": 7.1197994236300435
+      },
+      {
+        "profile": "P1",
+        "tokens": 384,
+        "mean": 36.58823529411765,
+        "ci95": 6.251373548686902
+      },
+      {
+        "profile": "P2",
+        "tokens": 768,
+        "mean": 40.11764705882353,
+        "ci95": 4.913501782814777
+      }
+    ],
+    "Top-k CLIP/ASR": [
+      {
+        "profile": "P0",
+        "tokens": 192,
+        "mean": 90.86274509803921,
+        "ci95": 5.029746745550481
+      },
+      {
+        "profile": "P1",
+        "tokens": 384,
+        "mean": 94.62745098039217,
+        "ci95": 4.691334365654096
+      },
+      {
+        "profile": "P2",
+        "tokens": 768,
+        "mean": 94.62745098039217,
+        "ci95": 4.691334365654096
+      }
+    ],
+    "Static Visual Token Pruning": [
+      {
+        "profile": "P0",
+        "tokens": 192,
+        "mean": 53.333333333333336,
+        "ci95": 7.61966947691973
+      },
+      {
+        "profile": "P1",
+        "tokens": 384,
+        "mean": 53.333333333333336,
+        "ci95": 7.61966947691973
+      },
+      {
+        "profile": "P2",
+        "tokens": 768,
+        "mean": 53.333333333333336,
+        "ci95": 7.61966947691973
+      }
+    ],
+    "Pure Facility-Location": [
+      {
+        "profile": "P0",
+        "tokens": 192,
+        "mean": 90.86274509803921,
+        "ci95": 5.029746745550481
+      },
+      {
+        "profile": "P1",
+        "tokens": 384,
+        "mean": 87.09803921568627,
+        "ci95": 7.080143796413489
+      },
+      {
+        "profile": "P2",
+        "tokens": 768,
+        "mean": 89.01960784313727,
+        "ci95": 6.6206861685016865
+      }
+    ],
+    "TurnFocus (Ours)": [
+      {
+        "profile": "P0",
+        "tokens": 192,
+        "mean": 80.39215686274511,
+        "ci95": 5.936218012706396
+      },
+      {
+        "profile": "P1",
+        "tokens": 384,
+        "mean": 81.5686274509804,
+        "ci95": 5.303371144519641
+      },
+      {
+        "profile": "P2",
+        "tokens": 768,
+        "mean": 87.09803921568627,
+        "ci95": 7.080143796413489
+      }
+    ]
+  },
+  "dig_retention": {
+    "TurnFocus (Full, w/ DIG)": [
+      {
+        "profile": "P0",
+        "mean": 70.0,
+        "ci95": 23.011344646331917
+      },
+      {
+        "profile": "P1",
+        "mean": 80.0,
+        "ci95": 24.808329791491275
+      },
+      {
+        "profile": "P2",
+        "mean": 90.0,
+        "ci95": 10.559109711007899
+      }
+    ],
+    "TurnFocus w/o DIG": [
+      {
+        "profile": "P0",
+        "mean": 90.0,
+        "ci95": 6.503998699036564
+      },
+      {
+        "profile": "P1",
+        "mean": 90.0,
+        "ci95": 10.559109711007899
+      },
+      {
+        "profile": "P2",
+        "mean": 90.0,
+        "ci95": 10.559109711007899
+      }
+    ],
+    "Static Visual Token Pruning": [
+      {
+        "profile": "P0",
+        "mean": 80.0,
+        "ci95": 15.269411489477411
+      },
+      {
+        "profile": "P1",
+        "mean": 70.0,
+        "ci95": 14.637322218715724
+      },
+      {
+        "profile": "P2",
+        "mean": 70.0,
+        "ci95": 14.637322218715724
+      }
+    ],
+    "Uniform FPS Sampling": [
+      {
+        "profile": "P0",
+        "mean": 20.0,
+        "ci95": 16.158517651081105
+      },
+      {
+        "profile": "P1",
+        "mean": 40.0,
+        "ci95": 7.968268794542222
+      },
+      {
+        "profile": "P2",
+        "mean": 50.0,
+        "ci95": 15.28838730752395
+      }
+    ]
+  },
+  "per_source_multiturn": {
+    "P0": {
+      "SVBench": [
+        85.0,
+        12.985632921044596
+      ],
+      "OmniMMI": [
+        71.42857142857143,
+        18.814050708966057
+      ],
+      "VMB-Ep": [
+        80.0,
+        17.6964347122784
+      ],
+      "VMB-Ans": [
+        100.0,
+        0.0
+      ]
+    },
+    "P1": {
+      "SVBench": [
+        85.0,
+        12.985632921044596
+      ],
+      "OmniMMI": [
+        71.42857142857143,
+        18.814050708966057
+      ],
+      "VMB-Ep": [
+        100.0,
+        0.0
+      ],
+      "VMB-Ans": [
+        100.0,
+        0.0
+      ]
+    },
+    "P2": {
+      "SVBench": [
+        100.0,
+        0.0
+      ],
+      "OmniMMI": [
+        70.0,
+        19.227595730985
+      ],
+      "VMB-Ep": [
+        100.0,
+        0.0
+      ],
+      "VMB-Ans": [
+        100.0,
+        0.0
+      ]
+    }
+  },
+  "lp_audit": {
+    "Profile P0 (tight budget)": {
+      "median": 0.5422761958432134,
+      "p10": 0.5109508497140995,
+      "worst": 0.5024211195023399
+    },
+    "Profile P1 (balanced budget)": {
+      "median": 0.49774482405719384,
+      "p10": 0.3053853319085452,
+      "worst": 0.2696534367342764
+    },
+    "Profile P2 (expanded budget)": {
+      "median": 0.4967180701686831,
+      "p10": 0.3121606335715605,
+      "worst": 0.27116761021949676
+    },
+    "Intent: Global Summary": {
+      "median": 0.9521627134470488,
+      "p10": 0.91437458323221,
+      "worst": 0.7588447637182747
+    },
+    "Intent: Multi-Clip Comparison": {
+      "median": 0.49774482405719384,
+      "p10": 0.42793953711564464,
+      "worst": 0.4274469160397811
+    },
+    "Intent: Local Drill-Down": {
+      "median": 0.5137365737910596,
+      "p10": 0.28039069292510077,
+      "worst": 0.2696534367342764
+    },
+    "Overall Sampled Turns": {
+      "median": 0.5211543693139926,
+      "p10": 0.3221292659819491,
+      "worst": 0.2696534367342764
+    }
+  },
+  "latency_ms": {
+    "Intent & Coreference Router (ms)": [
+      0.18454199994266673,
+      0.20862204999048117
+    ],
+    "O(M) Belief Filter & L0 Scoring (ms)": [
+      2.2697685000139245,
+      2.316710949969547
+    ],
+    "1D NMS + Stratified Pooling (ms)": [
+      1.5531000000237327,
+      1.7368163000128334
+    ],
+    "Lazy-Greedy Allocation, Alg. 1 (ms)": [
+      4.644316999929288,
+      5.596771099919806
+    ],
+    "Optional 2B Reranker (Trig. 32.1%; cond. ms)": [
+      1464.3964159999996,
+      1476.3325080000413
+    ],
+    "Total Online Front-End (amortized ms)": [
+      8.983786499925372,
+      1478.4631455500516
+    ],
+    "Off-Path: LP Audit Solver (ms / sample)": [
+      4.405464499996015,
+      5.086891099995228
+    ],
+    "One-Time Offline Index (s / hour video)": [
+      4.165429259263156,
+      4.4986636000042095
+    ]
+  },
+  "ablations": {
+    "TurnFocus (Full)": {
+      "sum": [
+        100.0,
+        0.0
+      ],
+      "drill": [
+        67.82323232323233,
+        24.808329791491275
+      ],
+      "comp": [
+        100.0,
+        0.0
+      ],
+      "silent": [
+        50.0,
+        0.0
+      ],
+      "avg": [
+        81.5686274509804,
+        5.303371144519641
+      ]
+    },
+    "(i) w/o 1D Temporal NMS": {
+      "sum": [
+        100.0,
+        0.0
+      ],
+      "drill": [
+        67.82323232323233,
+        24.808329791491275
+      ],
+      "comp": [
+        100.0,
+        0.0
+      ],
+      "silent": [
+        50.0,
+        0.0
+      ],
+      "avg": [
+        81.5686274509804,
+        5.303371144519641
+      ]
+    },
+    "(ii) w/o Stratified Summary Pool": {
+      "sum": [
+        100.0,
+        0.0
+      ],
+      "drill": [
+        67.82323232323233,
+        24.808329791491275
+      ],
+      "comp": [
+        100.0,
+        0.0
+      ],
+      "silent": [
+        50.0,
+        0.0
+      ],
+      "avg": [
+        81.5686274509804,
+        5.303371144519641
+      ]
+    },
+    "(iii) Hard Intent Switching": {
+      "sum": [
+        100.0,
+        0.0
+      ],
+      "drill": [
+        55.24242424242425,
+        22.263764989059442
+      ],
+      "comp": [
+        100.0,
+        0.0
+      ],
+      "silent": [
+        26.0,
+        23.30303381693771
+      ],
+      "avg": [
+        77.80392156862744,
+        5.6033648233483255
+      ]
+    },
+    "(iv-a) Unbucketed Entity Coverage": {
+      "sum": [
+        100.0,
+        0.0
+      ],
+      "drill": [
+        67.82323232323233,
+        24.808329791491275
+      ],
+      "comp": [
+        100.0,
+        0.0
+      ],
+      "silent": [
+        50.0,
+        0.0
+      ],
+      "avg": [
+        81.5686274509804,
+        5.303371144519641
+      ]
+    },
+    "(iv-b) Binary Entity Labels": {
+      "sum": [
+        100.0,
+        0.0
+      ],
+      "drill": [
+        100.0,
+        0.0
+      ],
+      "comp": [
+        100.0,
+        0.0
+      ],
+      "silent": [
+        50.0,
+        0.0
+      ],
+      "avg": [
+        90.86274509803921,
+        5.029746745550481
+      ]
+    },
+    "(v) w/o DIG Fidelity Weighting": {
+      "sum": [
+        100.0,
+        0.0
+      ],
+      "drill": [
+        87.41919191919192,
+        10.559109711007899
+      ],
+      "comp": [
+        100.0,
+        0.0
+      ],
+      "silent": [
+        26.0,
+        23.30303381693771
+      ],
+      "avg": [
+        87.09803921568627,
+        7.080143796413489
+      ]
+    },
+    "(vi) Uniform Reset (c_conf < gamma_conf)": {
+      "sum": [
+        100.0,
+        0.0
+      ],
+      "drill": [
+        67.82323232323233,
+        24.808329791491275
+      ],
+      "comp": [
+        100.0,
+        0.0
+      ],
+      "silent": [
+        50.0,
+        0.0
+      ],
+      "avg": [
+        81.5686274509804,
+        5.303371144519641
+      ]
+    },
+    "(vii) Fixed Unclamped eta_mod": {
+      "sum": [
+        100.0,
+        0.0
+      ],
+      "drill": [
+        93.95959595959596,
+        6.904059751649141
+      ],
+      "comp": [
+        100.0,
+        0.0
+      ],
+      "silent": [
+        65.33333333333334,
+        25.614284047485466
+      ],
+      "avg": [
+        92.7843137254902,
+        5.491168641911536
+      ]
+    }
+  },
+  "sensitivity_sweeps": {
+    "L_run": {
+      "L_run = 1 (atomic only)": {
+        "sum": 100.0,
+        "comp": 100.0,
+        "overall": 77.80392156862744,
+        "lat_p50_ms": 4.0485390002231725,
+        "lp_median": 0.4981655418928466
+      },
+      "L_run = 2": {
+        "sum": 100.0,
+        "comp": 100.0,
+        "overall": 77.80392156862744,
+        "lat_p50_ms": 6.1411460001181695,
+        "lp_median": 0.4847230502143276
+      },
+      "L_run = 3 (default)": {
+        "sum": 100.0,
+        "comp": 100.0,
+        "overall": 77.80392156862744,
+        "lat_p50_ms": 6.522525000036694,
+        "lp_median": 0.49774482405719384
+      },
+      "L_run = 4": {
+        "sum": 100.0,
+        "comp": 100.0,
+        "overall": 77.80392156862744,
+        "lat_p50_ms": 7.1590029999697435,
+        "lp_median": 0.4963216918037346
+      }
+    },
+    "M_cand": {
+      "M_cand = 16": {
+        "sum": 100.0,
+        "comp": 100.0,
+        "overall": 77.80392156862744,
+        "lat_p50_ms": 2.8330810000625206,
+        "lp_median": 0.48207982647567443
+      },
+      "M_cand = 32": {
+        "sum": 100.0,
+        "comp": 100.0,
+        "overall": 77.80392156862744,
+        "lat_p50_ms": 3.919530999610288,
+        "lp_median": 0.48244815587454887
+      },
+      "M_cand = 64 (default)": {
+        "sum": 100.0,
+        "comp": 100.0,
+        "overall": 77.80392156862744,
+        "lat_p50_ms": 6.536541999821566,
+        "lp_median": 0.49774482405719384
+      },
+      "M_cand = 128": {
+        "sum": 100.0,
+        "comp": 100.0,
+        "overall": 77.80392156862744,
+        "lat_p50_ms": 7.700138000018342,
+        "lp_median": 0.4898401264529592
+      }
+    },
+    "K_nbr": {
+      "K_nbr = 8": {
+        "sum": 100.0,
+        "comp": 100.0,
+        "overall": 92.19607843137256,
+        "lat_p50_ms": 5.059823000237884,
+        "lp_median": 0.48207982645772934
+      },
+      "K_nbr = 16": {
+        "sum": 100.0,
+        "comp": 100.0,
+        "overall": 77.80392156862744,
+        "lat_p50_ms": 5.624365999892689,
+        "lp_median": 0.48207982647961856
+      },
+      "K_nbr = 32 (default)": {
+        "sum": 100.0,
+        "comp": 100.0,
+        "overall": 77.80392156862744,
+        "lat_p50_ms": 6.615851999868028,
+        "lp_median": 0.49774482405719384
+      },
+      "K_nbr = 64": {
+        "sum": 100.0,
+        "comp": 100.0,
+        "overall": 81.5686274509804,
+        "lat_p50_ms": 7.281029000068884,
+        "lp_median": 0.49831568716031865
+      }
+    },
+    "theta_nms": {
+      "theta_nms = 0.3": {
+        "sum": 100.0,
+        "comp": 100.0,
+        "overall": 77.80392156862744,
+        "lat_p50_ms": 4.491052000048512,
+        "lp_median": 0.4981655418928466
+      },
+      "theta_nms = 0.5 (default)": {
+        "sum": 100.0,
+        "comp": 100.0,
+        "overall": 77.80392156862744,
+        "lat_p50_ms": 6.47977800008448,
+        "lp_median": 0.49774482405719384
+      },
+      "theta_nms = 0.7": {
+        "sum": 100.0,
+        "comp": 100.0,
+        "overall": 77.80392156862744,
+        "lat_p50_ms": 6.758275999800389,
+        "lp_median": 0.49635436598007376
+      },
+      "theta_nms = 1.0 (no NMS)": {
+        "sum": 100.0,
+        "comp": 100.0,
+        "overall": 77.80392156862744,
+        "lat_p50_ms": 6.135439000217957,
+        "lp_median": 0.49635436598007376
+      }
+    }
+  },
+  "silent_modality_breakdown": {
+    "Strictly Silent (ASR_Density == 0)": {
+      "Visual-Only (eta_mod = 0)": {
+        "mean_eta_mod": 0.0,
+        "acc": 25.0,
+        "iou": 16.666666666666664,
+        "delta_vs_vis_only": 0.0
+      },
+      "Fixed Unclamped (eta_mod = eta_0)": {
+        "mean_eta_mod": 0.6,
+        "acc": 75.0,
+        "iou": 24.999999999999993,
+        "delta_vs_vis_only": 50.0
+      },
+      "Clamped Adaptive (Ours)": {
+        "mean_eta_mod": 0.0,
+        "acc": 25.0,
+        "iou": 16.666666666666664,
+        "delta_vs_vis_only": 0.0
+      }
+    },
+    "Low-ASR (0 < ASR_Density < 0.2)": {
+      "Visual-Only (eta_mod = 0)": {
+        "mean_eta_mod": 0.0,
+        "acc": 50.0,
+        "iou": 24.999999999999996,
+        "delta_vs_vis_only": 0.0
+      },
+      "Fixed Unclamped (eta_mod = eta_0)": {
+        "mean_eta_mod": 0.6,
+        "acc": 0.0,
+        "iou": 16.666666666666664,
+        "delta_vs_vis_only": -50.0
+      },
+      "Clamped Adaptive (Ours)": {
+        "mean_eta_mod": 0.0225,
+        "acc": 50.0,
+        "iou": 24.999999999999996,
+        "delta_vs_vis_only": 0.0
+      }
+    },
+    "Speech-Rich (ASR_Density >= 0.2)": {
+      "Visual-Only (eta_mod = 0)": {
+        "mean_eta_mod": 0.0,
+        "acc": 72.72727272727273,
+        "iou": 22.760942760942758,
+        "delta_vs_vis_only": 0.0
+      },
+      "Fixed Unclamped (eta_mod = eta_0)": {
+        "mean_eta_mod": 0.6,
+        "acc": 100.0,
+        "iou": 31.363636363636356,
+        "delta_vs_vis_only": 27.272727272727266
+      },
+      "Clamped Adaptive (Ours)": {
+        "mean_eta_mod": 0.43909090909090903,
+        "acc": 93.93939393939394,
+        "iou": 28.98989898989899,
+        "delta_vs_vis_only": 21.212121212121204
+      }
+    }
+  },
+  "qualitative_case1_trace": [
+    {
+      "video_id": "test_mt_svbench_00",
+      "turn_idx": 0,
+      "query": "Summarize the main milestones covered across this session.",
+      "selected_runs": [
+        {
+          "clips": [
+            4
+          ],
+          "span_sec": [
+            180.0,
+            225.0
+          ],
+          "tier": "R_L1"
+        },
+        {
+          "clips": [
+            17
+          ],
+          "span_sec": [
+            765.0,
+            810.0
+          ],
+          "tier": "R_L2"
+        },
+        {
+          "clips": [
+            29
+          ],
+          "span_sec": [
+            1305.0,
+            1350.0
+          ],
+          "tier": "R_L1"
+        }
+      ],
+      "prediction": "A",
+      "reference": "A",
+      "correct": 1
+    },
+    {
+      "video_id": "test_mt_svbench_00",
+      "turn_idx": 1,
+      "query": "Compare Prof_Lin's stance from the opening to Q&A: how did it change across both appearances?",
+      "selected_runs": [
+        {
+          "clips": [
+            5
+          ],
+          "span_sec": [
+            225.0,
+            270.0
+          ],
+          "tier": "R_L1"
+        },
+        {
+          "clips": [
+            17
+          ],
+          "span_sec": [
+            765.0,
+            810.0
+          ],
+          "tier": "R_L1"
+        },
+        {
+          "clips": [
+            29
+          ],
+          "span_sec": [
+            1305.0,
+            1350.0
+          ],
+          "tier": "R_L1"
+        },
+        {
+          "clips": [
+            31,
+            32,
+            33
+          ],
+          "span_sec": [
+            1395.0,
+            1530.0
+          ],
+          "tier": "R_L1"
+        }
+      ],
+      "prediction": "B",
+      "reference": "B",
+      "correct": 1
+    },
+    {
+      "video_id": "test_mt_svbench_00",
+      "turn_idx": 2,
+      "query": "What exact formula constant did the speaker write on the whiteboard right after that?",
+      "selected_runs": [
+        {
+          "clips": [
+            5
+          ],
+          "span_sec": [
+            225.0,
+            270.0
+          ],
+          "tier": "R_L1"
+        },
+        {
+          "clips": [
+            8
+          ],
+          "span_sec": [
+            360.0,
+            405.0
+          ],
+          "tier": "R_L1"
+        },
+        {
+          "clips": [
+            31
+          ],
+          "span_sec": [
+            1395.0,
+            1440.0
+          ],
+          "tier": "R_L2"
+        }
+      ],
+      "prediction": "C",
+      "reference": "C",
+      "correct": 1
+    },
+    {
+      "video_id": "test_mt_svbench_00",
+      "turn_idx": 3,
+      "query": "Later at the end of the broadcast, what caused the backup power switchover?",
+      "selected_runs": [
+        {
+          "clips": [
+            5
+          ],
+          "span_sec": [
+            225.0,
+            270.0
+          ],
+          "tier": "R_L2"
+        },
+        {
+          "clips": [
+            30
+          ],
+          "span_sec": [
+            1350.0,
+            1395.0
+          ],
+          "tier": "R_L1"
+        },
+        {
+          "clips": [
+            37
+          ],
+          "span_sec": [
+            1665.0,
+            1710.0
+          ],
+          "tier": "R_L1"
+        }
+      ],
+      "prediction": "Based on the provided video evidence, the backup power switchover was caused by a \"transformer cooling alert\".\n\nThis is explicitly stated in the ASR transcript for the segment from 27:45 to 28:30, which reads: \"At the end of the broadcast, a transformer",
+      "reference": "A transformer cooling alert triggered the backup power switchover.",
+      "correct": 1
+    }
+  ]
+}

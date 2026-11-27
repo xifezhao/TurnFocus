@@ -1,0 +1,20 @@
+{
+  "title": "Artifact for TurnFocus: Intent-Adaptive Submodular Evidence Grounding for Multi-Turn Long-Video Question Answering",
+  "upload_type": "software",
+  "description": "IEEE/ACM Four-Badge compliant research artifact implementing TurnFocus: O(M) banded-kernel multi-turn belief filtering, exact-cardinality 1D temporal NMS + stratified candidate pooling, smooth intent-weighted submodular lazy-greedy allocation, and HiGHS linear-programming a-posteriori optimality auditing.",
+  "license": "MIT",
+  "version": "1.0.0",
+  "keywords": [
+    "ACL",
+    "Artifact Evaluation",
+    "Long-Video QA",
+    "Multi-Turn Grounding",
+    "Submodular Optimization",
+    "MLLM"
+  ],
+  "creators": [
+    {
+      "name": "Anonymous Authors"
+    }
+  ]
+}

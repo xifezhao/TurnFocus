@@ -1,0 +1,15 @@
+cff-version: 1.2.0
+message: "If you use TurnFocus or its evaluation artifact, please cite our paper."
+title: "TurnFocus: Intent-Adaptive Submodular Evidence Grounding for Multi-Turn Long-Video Question Answering"
+version: "1.0.0"
+date-released: "2026-11-27"
+license: "MIT"
+type: software
+authors:
+  - name: "TurnFocus Anonymous Authors"
+keywords:
+  - multimodal large language models
+  - long-video question answering
+  - multi-turn dialogue
+  - submodular optimization
+  - linear programming optimality certification

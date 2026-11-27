@@ -1,0 +1,47 @@
+[build-system]
+requires = ["setuptools>=68.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "turnfocus"
+version = "1.0.0"
+description = "TurnFocus: Intent-Adaptive Submodular Evidence Grounding for Multi-Turn Long-Video Question Answering"
+readme = "README.md"
+requires-python = ">=3.10"
+license = {text = "MIT"}
+authors = [
+    {name = "TurnFocus Authors"}
+]
+dependencies = [
+    "numpy>=1.26.0",
+    "scipy>=1.11.0",
+    "pyyaml>=6.0.1",
+]
+
+[project.optional-dependencies]
+gpu = [
+    "torch>=2.4.0",
+    "torchvision>=0.19.0",
+    "transformers>=4.51.0",
+    "accelerate>=0.34.0",
+    "datasets>=3.0.0",
+    "huggingface-hub>=0.26.0",
+    "pillow>=10.0.0",
+    "opencv-python-headless>=4.9.0",
+    "qwen-vl-utils>=0.0.8",
+    "scikit-learn>=1.4.0",
+]
+dev = [
+    "pytest>=8.0.0",
+]
+
+[project.scripts]
+turnfocus-colab-ae = "turnfocus.evaluation.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src", "."]
+addopts = "-q"

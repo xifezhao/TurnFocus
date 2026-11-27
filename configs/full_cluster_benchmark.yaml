@@ -1,0 +1,13 @@
+# Full Multi-Node / Sharded 8-Benchmark Cluster Configuration
+experiment_name: "turnfocus_full_8benchmark"
+seeds: [101, 202, 303, 404, 505]
+sharding:
+  enabled: true
+  num_shards: 16
+backbones:
+  - "Qwen/Qwen3-VL-8B-Instruct"
+  - "Qwen/Qwen3-VL-30B-A3B-Instruct"
+  - "Qwen/Qwen3-Omni-30B-A3B-Instruct"
+benchmarks:
+  single_turn: ["Video-MME", "LongVideoBench", "MLVU", "LVBench", "CG-Bench"]
+  multi_turn: ["SVBench", "OmniMMI", "VideoMemBench"]

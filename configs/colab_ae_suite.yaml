@@ -1,0 +1,23 @@
+# Google Colab GPU Artifact Evaluation Suite Configuration
+experiment_name: "turnfocus_colab_ae_v1"
+seeds: [101, 202, 303, 404, 505]
+backbones:
+  primary_dense: "Qwen/Qwen3-VL-8B-Instruct"
+  optional_moe_vl: "Qwen/Qwen3-VL-30B-A3B-Instruct"
+  optional_moe_omni: "Qwen/Qwen3-Omni-30B-A3B-Instruct"
+  aux_2b_reranker: "Qwen/Qwen3-VL-2B-Instruct"
+  keyframe_dual_encoder: "openai/clip-vit-base-patch32"
+
+spatial_tiers:
+  r_l1_hw: [140, 140]
+  r_l2_hw: [560, 560]
+
+protocol:
+  enforce_video_disjoint_splits: true
+  temperature: 0.0
+  do_sample: false
+  l_hist_max: 2048
+  run_offpath_lp_audit: true
+  run_component_ablations: true
+  run_sensitivity_sweeps: true
+  run_silent_modality_breakdown: true

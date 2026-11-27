@@ -1,0 +1,55 @@
+# Complete hyperparameter initialization matching Table 4 (tab:app_hyperparams) of manuscript.tex
+index_and_runs:
+  bucket_width_sec: 180.0
+  l_run: 3
+  l_run_sweep: [1, 2, 3, 4]
+  k_nbr: 32
+  k_nbr_sweep: [8, 16, 32, 64]
+
+belief_and_probe:
+  w_b: 3
+  d_shift: 2
+  eps_0: 0.05
+  rho_shrink: 0.70
+  gamma_conf: 0.80
+  t_soft: 0.50
+  eta_0: 0.60
+  reranker_pool_k: 16
+  target_reranker_rate: 0.14
+
+candidate_pool:
+  m_cand: 64
+  m_cand_sweep: [16, 32, 64, 128]
+  theta_nms: 0.50
+  theta_nms_sweep: [0.3, 0.5, 0.7, 1.0]
+
+submodular_allocation:
+  alpha_ocr: 0.65
+  tau_dig: 0.70
+  gamma_red: 0.50
+  beta_ent: 1.20
+  k_a: 2.0
+  mu_b: 0.15
+  l_hist_max: 2048
+  l_pos_max: 16384
+  l_ts: 8
+
+operating_profiles:
+  P0:
+    visual_token_budget: 256
+    decode_compute_budget: 4.5
+    allowed_tiers: ["R_L1"]
+  P1:
+    visual_token_budget: 512
+    decode_compute_budget: 10.0
+    allowed_tiers: ["R_L1", "R_L2"]
+    tokens_per_clip_l1: 64
+    tokens_per_clip_l2: 160
+    max_l2_token_frac: 0.50
+  P2:
+    visual_token_budget: 1024
+    decode_compute_budget: 20.0
+    allowed_tiers: ["R_L1", "R_L2"]
+    tokens_per_clip_l1: 64
+    tokens_per_clip_l2: 160
+    max_l2_token_frac: 0.50
