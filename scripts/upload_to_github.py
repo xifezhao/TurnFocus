@@ -44,7 +44,7 @@ def main() -> None:
     parser.add_argument("--owner", default="xifezhao")
     parser.add_argument("--repo", default="TurnFocus")
     parser.add_argument("--branch", default="main")
-    parser.add_argument("--message", default="Initial IEEE/ACM Four-Badge artifact release for TurnFocus")
+    parser.add_argument("--message", default="Clean TurnFocus artifact codebase and synthetic GPU sanity-check logs")
     args = parser.parse_args()
 
     token = os.environ.get("GITHUB_TOKEN", "").strip()

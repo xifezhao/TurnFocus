@@ -1,4 +1,6 @@
-# TurnFocus Measured Empirical Evaluation Summary (Google Colab GPU)
+# TurnFocus Controlled Synthetic GPU Sanity-Check Report
+
+> **Scope Notice (Synthetic Sanity Check — Not Real Public Benchmarks)**: This report logs end-to-end execution of real unmodified HuggingFace model weights (`Qwen/Qwen3-VL-8B-Instruct`, `Qwen/Qwen3-VL-2B-Instruct`, `openai/clip-vit-base-patch32`) on a small controlled synthetic audiovisual testbed (4 Dev / 15 Test video-disjoint template episodes). It is intended for functional, LP-audit, and wall-clock latency verification and **must not** be interpreted as full evaluation on the 8 real public long-video benchmarks.
 
 ## 1. Hardware & Pinned Checkpoint Provenance
 - **Timestamp (UTC)**: `2026-11-27T02:17:14.342345+00:00`

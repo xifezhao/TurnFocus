@@ -1,40 +1,36 @@
-# Artifact Appendix (IEEE / ACM Four-Badge & ACL ARR Specification)
+# Self-Assessed Reproducibility & Artifact Appendix
+
+> **Disclaimer**: This appendix is a **self-assessed reproducibility checklist** prepared in the standard ACM/IEEE Artifact Evaluation and ACL ARR format to assist reviewers. No external Artifact Evaluation Committee has reviewed this artifact yet, and **no ACM/IEEE badges have been awarded**.
 
 ## A.1 Abstract
-This artifact provides the complete source code, configuration files, mathematical property test suite, HuggingFace benchmark & MLLM adapters, linear-programming optimality auditor, and automated Google Colab CLI orchestration scripts for **TurnFocus: Intent-Adaptive Submodular Evidence Grounding for Multi-Turn Long-Video Question Answering**. It is structured to satisfy all four IEEE / ACM Artifact Review and Badging v1.1 criteria: **Artifacts Available**, **Artifacts Evaluated — Functional**, **Artifacts Evaluated — Reusable**, and **Results Reproduced**.
+This artifact provides the reference source code, configuration files, mathematical property test suite, HuggingFace MLLM/CLIP runners, HiGHS linear-programming optimality auditor, and GPU sanity-check scripts for **TurnFocus: Intent-Adaptive Submodular Evidence Grounding for Multi-Turn Long-Video Question Answering**.
 
 ---
 
 ## A.2 Artifact Meta-Information Checklist
 - **Algorithm**: TurnFocus ($O(M)$ banded-kernel belief filter, exact-cardinality 1D temporal NMS + bucket stratification, smooth intent-weighted submodular lazy-greedy allocator, and off-path HiGHS LP optimality auditor).
 - **Program**: Python `>= 3.10` (`turnfocus` PEP-621 package).
-- **Compilation / Solvers**: NumPy, SciPy HiGHS (`scipy.optimize.linprog`), PyTorch `>= 2.4` with SDPA / FlashAttention, HuggingFace `transformers >= 4.51`.
-- **Models (Unmodified Open-Weight Checkpoints)**:
-  - Dense Vision-Language Backbone: `Qwen/Qwen3-VL-8B-Instruct` (BF16)
-  - Sparse MoE Backbones (80GB GPU): `Qwen/Qwen3-VL-30B-A3B-Instruct`, `Qwen/Qwen3-Omni-30B-A3B-Instruct`
-  - Auxiliary Decoupled 2B Probe: `Qwen/Qwen3-VL-2B-Instruct` (mid-layer $L_{11}\text{--}L_{15}$)
-  - Offline Keyframe Dual-Encoder: `openai/clip-vit-base-patch32`
-- **Data-Set Registry**: Video-MME (`lmms-lab/Video-MME`), LongVideoBench (`longvideobench/LongVideoBench`), MLVU (`MLVU/MVLU`), LVBench (`THUDM/LVBench`), CG-Bench (`CG-Bench/CG-Bench`), SVBench (`yzy666/SVBench`), OmniMMI (`bigai-nlco/OmniMMI`), and VideoMemBench (`VideoMemBench/data`).
-- **Run-time Environment**: Ubuntu 22.04+ / macOS (CPU verification) or NVIDIA L4 / A100 / H100 GPU (Google Colab CLI or Docker `Dockerfile`).
-- **Metrics**: QA Accuracy (Exact MC & temp-0.0 binary LLM-Judge + Cohen's $\kappa$), Temporal Grounding IoU, DIG Information-Cliff Retention, Accuracy-Token Pareto Curves ($P_0, P_1, P_2$), LP Optimality Ratio ($\tilde{F}_{\mathbf{u}}(S)/\mathrm{UB}(S)$ Median / P10 / Worst), and Wall-Clock Localization Latency (P50 / P95 ms).
-- **Output**: Structured JSON (`provenance.json`, `full_empirical_results.json`), Markdown summary tables (`summary_report.md`), drop-in LaTeX `pgfplots` coordinates (`fig3_pgfplots_coords.tex`), and Colab session `.ipynb` logs.
-- **Publicly Archivable**: Yes (`LICENSE`, `CITATION.cff`, `zenodo.json`, SHA-256 manifest).
+- **Solvers & Libraries**: NumPy, SciPy HiGHS (`scipy.optimize.linprog`), PyTorch `>= 2.4`, HuggingFace `transformers >= 4.51`.
+- **Models Exercised in Sanity Check (Unmodified Open-Weight Checkpoints)**:
+  - Dense Vision-Language Backbone: `Qwen/Qwen3-VL-8B-Instruct` (BF16, pinned SHA `0c351dd01ed87e9c1b53cbc748cba10e6187ff3b`)
+  - Auxiliary Decoupled 2B Probe: `Qwen/Qwen3-VL-2B-Instruct` (pinned SHA `89644892e4d85e24eaac8bacfd4f463576704203`)
+  - Offline Keyframe Dual-Encoder: `openai/clip-vit-base-patch32` (pinned SHA `3d74acf9a28c67741b2f4f2ea7635f0aaf6f0268`)
+  - 30B-MoE Backbones (`Qwen/Qwen3-VL-30B-A3B-Instruct`, `Qwen/Qwen3-Omni-30B-A3B-Instruct`): Supported by `MLLMBackboneRunner`; require 80GB+ GPU hardware and are **not** included in the archived 40GB sanity-check run.
+- **Data Scope & Transparency**:
+  - The archived run in `results/synthetic_gpu_sanity_check/` uses **controlled synthetic audiovisual episodes** (4 Dev / 15 Test video-disjoint episodes) for end-to-end functional, latency, and LP-audit verification.
+  - Full-scale evaluation on the 8 public long-video benchmarks (Video-MME, LongVideoBench, MLVU, LVBench, CG-Bench, SVBench, OmniMMI, VideoMemBench) requires downloading the official benchmark video files under their respective licenses; the included `hf_benchmarks.py` module records official HuggingFace Hub repository IDs and live commit SHAs.
+- **Run-time Environment**: Linux/macOS/Windows (CPU unit tests) or NVIDIA CUDA GPU (sanity-check & full evaluation).
+- **Output**: Structured JSON (`provenance.json`, `full_empirical_results.json`), Markdown report (`summary_report.md`), and `pgfplots` coordinate snippets (`fig3_pgfplots_coords.tex`).
 
 ---
 
-## A.3 Compliance with IEEE / ACM Four Badges
+## A.3 Self-Assessed Reproducibility Checklist
 
-1. **Artifacts Available**: Includes `CITATION.cff`, `zenodo.json`, `LICENSE`, `Dockerfile`, and `scripts/generate_checksums.py` producing `SHA256SUMS.txt`.
-2. **Artifacts Evaluated — Functional**:
-   - Zero-fabrication implementation of Equations (1)–(18) and Algorithm 1.
-   - `scripts/run_smoke_test.sh` runs `pytest` verifying normalization, monotonicity, submodularity, incremental-vs-exact equivalence, exact discrete optimum $\widetilde{\mathrm{OPT}} \le \mathrm{UB}(S)$, column-stochastic $\mathbf{T}_{\mathrm{band}}$, clamped $\eta_{\mathrm{mod}}$, exact cardinality $M_{\mathrm{top}} + M_{\mathrm{strat}} = M_{\mathrm{cand}}$, and zero cross-split video leakage.
-3. **Artifacts Evaluated — Reusable**:
-   - Clean `src/turnfocus/` package layout with typed dataclasses (`turnfocus/types.py`), modular `MLLMBackboneRunner` supporting arbitrary HuggingFace VLM checkpoints via retrieve-then-full-prefill, and YAML experiment configs (`configs/`).
-4. **Results Reproduced**:
-   - `scripts/launch_colab_cli.sh` provisions a Google Colab GPU VM, installs dependencies, executes `scripts/run_colab_ae.py` across 5 deterministic seeds (`[101, 202, 303, 404, 505]`), logs exact HuggingFace revision SHAs and GPU telemetry to `provenance.json`, downloads all outputs, exports the replayable session notebook, and stops the VM cleanly.
-
----
-
-## A.4 Extending TurnFocus to Custom Backbones or Benchmarks
-- **New MLLM Backbone**: Pass `--backbone <hf_org/model_name>` to `scripts/run_colab_ae.py` or instantiate `MLLMBackboneRunner(model_id=...)` — zero model weight or FlashAttention changes are required.
-- **New Video Dataset**: Construct `VideoDialogueEpisode` objects in `turnfocus/datasets/` and pass train/dev/test video IDs through `verify_video_disjoint_splits(...)` prior to `calibrate_on_dev_split(...)`.
+1. **Availability Preparation**: Includes `LICENSE` (MIT), `CITATION.cff`, `zenodo.json`, `Dockerfile`, and `SHA256SUMS.txt` (verified with zero missing entries). Authors, affiliations, paper URL, and DOI will be populated upon camera-ready acceptance.
+2. **Functional Verification**:
+   - Exact implementations of Equations (1)–(18) and Algorithm 1 in `src/turnfocus/`.
+   - `scripts/run_smoke_test.sh` executes `tests/` verifying normalization, monotonicity, submodularity, incremental-vs-exact marginal equivalence, exact discrete optimum $\widetilde{\mathrm{OPT}} \le \mathrm{UB}(S)$, column-stochastic $\mathbf{T}_{\mathrm{band}}$, clamped $\eta_{\mathrm{mod}}$, exact cardinality $M_{\mathrm{top}} + M_{\mathrm{strat}} = M_{\mathrm{cand}}$, and strict video-disjoint split guards.
+3. **Reusability**:
+   - Modular PEP-621 package (`src/turnfocus/`) with typed dataclasses (`types.py`), decoupled `MLLMBackboneRunner` supporting unmodified HuggingFace VLMs via retrieve-then-full-prefill, and YAML configs (`configs/`).
+4. **Transparent Provenance**:
+   - `results/synthetic_gpu_sanity_check/provenance.json` logs exact hardware, software stack, pinned HuggingFace commit SHAs, and GPU-hours, explicitly distinguished from full multi-benchmark evaluation.

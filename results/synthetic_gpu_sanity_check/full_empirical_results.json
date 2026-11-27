@@ -1,4 +1,6 @@
 {
+  "evaluation_scope": "SYNTHETIC_CONTROLLED_SANITY_CHECK_NOT_REAL_BENCHMARKS",
+  "scope_notice": "This archived A100-40GB run exercises real unmodified HuggingFace model weights (Qwen/Qwen3-VL-8B-Instruct, Qwen/Qwen3-VL-2B-Instruct, openai/clip-vit-base-patch32) on a small controlled synthetic audiovisual sanity-check suite (4 Dev / 15 Test template episodes). It verifies end-to-end pipeline execution, LP optimality auditing, and wall-clock latency, and is NOT a full evaluation on the 8 real public video benchmarks. The hf_dataset_shas field records live HuggingFace Hub commit hashes only.",
   "provenance": {
     "timestamp_utc": "2026-11-27T02:17:14.342345+00:00",
     "python_version": "3.13.16",

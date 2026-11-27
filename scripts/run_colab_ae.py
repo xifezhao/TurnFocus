@@ -464,20 +464,16 @@ def build_complete_benchmark_suite(
                 opts.append(f"{let}. {wrong_pool[w_ptr]} for unrelated baseline")
                 w_ptr += 1
 
-        # Incorporate real streamed question domain metadata note when fetched from HF Hub
-        hf_rows = hf_streamed_rows.get(b_name, [])
-        hf_tag = f" [HF-verified {b_name} #{b_i+1}]" if hf_rows else ""
-
         test_specs.append(
             (
-                f"test_single_{b_name.lower()}_{b_i:02d}",
-                b_name,
+                f"syn_single_{b_i:02d}",
+                f"Synthetic-ST-{b_i+1}",
                 {
-                    "hf_sha": hf_shas.get(b_name, "verified"),
+                    "hf_sha": "synthetic_sanity_episode",
                     "special_clips": {
                         target_clip: {
                             "scene_kind": "whiteboard_dig",
-                            "headline": f"{b_name} Technical Slide{hf_tag}",
+                            "headline": f"Synthetic Technical Slide #{b_i+1}",
                             "fine_detail": eq_str,
                             "asr_text": f"Here on the slide we present {topic_str} and its key parameter.",
                             "entities": {"presenter": 0.90},
@@ -493,7 +489,7 @@ def build_complete_benchmark_suite(
                             gt_intervals=[span_of(target_clip)],
                             strata=["drill"],
                             targets_dig=True,
-                            sub_source=b_name,
+                            sub_source=f"Synthetic-ST-{b_i+1}",
                         )
                     ],
                 },
@@ -1527,6 +1523,7 @@ def main() -> None:
 
     lp_summary = {k: summarize_lp_optimality_distribution(v) for k, v in lp_ratios_by_slice.items()}
     full_payload = {
+        "evaluation_scope": "SYNTHETIC_CONTROLLED_SANITY_CHECK_NOT_REAL_BENCHMARKS",
         "provenance": prov,
         "hf_dataset_shas": hf_shas,
         "calibration": asdict(frozen_cal),
